@@ -1,0 +1,73 @@
+@host = http://localhost:8080
+@token = REPLACE_WITH_TOKEN
+@taskId = 1
+@workId = 1
+@otherTaskId = 999999
+@otherWorkId = 999999
+
+### 1) guest token - user A
+POST {{host}}/api/v1/auth/guest
+Content-Type: application/json
+
+{
+  "deviceId": "device-A"
+}
+
+### 2) guest token - user B
+POST {{host}}/api/v1/auth/guest
+Content-Type: application/json
+
+{
+  "deviceId": "device-B"
+}
+
+### 3) create work
+POST {{host}}/api/v1/works
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "requestId": "req-create-001",
+  "title": "Episode 1",
+  "prompt": "Rainy night, convenience store, two strangers meet.",
+  "styleId": "anime_shonen",
+  "aspectRatio": "9:16",
+  "durationSec": 30,
+  "mode": "CLOUD"
+}
+
+### 4) poll task status by taskId
+GET {{host}}/api/v1/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+
+### 5) poll task status by taskId (repeat)
+GET {{host}}/api/v1/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+
+### 6) list works - first page
+GET {{host}}/api/v1/works?cursor=0&limit=20
+Authorization: Bearer {{token}}
+
+### 7) list works - cursor pagination
+GET {{host}}/api/v1/works?cursor={{workId}}&limit=10
+Authorization: Bearer {{token}}
+
+### 8) get work detail
+GET {{host}}/api/v1/works/{{workId}}
+Authorization: Bearer {{token}}
+
+### 9) get missing task (expect 4041)
+GET {{host}}/api/v1/tasks/{{otherTaskId}}
+Authorization: Bearer {{token}}
+
+### 10) get missing work (expect 4040)
+GET {{host}}/api/v1/works/{{otherWorkId}}
+Authorization: Bearer {{token}}
+
+### 11) delete work
+DELETE {{host}}/api/v1/works/{{workId}}
+Authorization: Bearer {{token}}
+
+### 12) get deleted work (expect 4040)
+GET {{host}}/api/v1/works/{{workId}}
+Authorization: Bearer {{token}}
