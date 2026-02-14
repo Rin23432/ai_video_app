@@ -90,7 +90,11 @@ class TaskViewModel(
     }
 
     fun retry() {
-        startPolling()
+        if (_uiState.value.taskId == null) {
+            bind(null, null)
+        } else {
+            startPolling()
+        }
     }
 
     fun stopPolling() {

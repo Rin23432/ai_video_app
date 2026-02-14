@@ -1,4 +1,5 @@
-﻿package com.animegen.app.ui.screen.settings
+﻿
+package com.animegen.app.ui.screen.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

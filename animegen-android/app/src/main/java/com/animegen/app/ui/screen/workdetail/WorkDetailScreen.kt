@@ -26,7 +26,7 @@ import com.animegen.app.ui.common.ErrorNotice
 import com.animegen.app.ui.common.viewModelFactory
 
 @Composable
-fun WorkDetailRoute(container: AppContainer, workIdArg: String?) {
+fun WorkDetailRoute(container: AppContainer, workIdArg: String?, onPublish: (Long) -> Unit) {
     val vm: WorkDetailViewModel = viewModel(factory = viewModelFactory {
         WorkDetailViewModel(container.worksRepository)
     })
@@ -39,12 +39,13 @@ fun WorkDetailRoute(container: AppContainer, workIdArg: String?) {
 
     WorkDetailScreen(
         state = state,
-        onRetry = { if (workId != null) vm.load(workId) }
+        onRetry = { if (workId != null) vm.load(workId) },
+        onPublish = { if (workId != null) onPublish(workId) }
     )
 }
 
 @Composable
-private fun WorkDetailScreen(state: WorkDetailUiState, onRetry: () -> Unit) {
+private fun WorkDetailScreen(state: WorkDetailUiState, onRetry: () -> Unit, onPublish: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,6 +68,9 @@ private fun WorkDetailScreen(state: WorkDetailUiState, onRetry: () -> Unit) {
 
         Text(work.title)
         Text("状态: ${work.status}")
+        if (work.status == "READY") {
+            Button(onClick = onPublish) { Text("发布到社区") }
+        }
         if (!work.videoUrl.isNullOrBlank()) {
             VideoPlayer(url = work.videoUrl)
         } else {

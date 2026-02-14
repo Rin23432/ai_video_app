@@ -45,3 +45,86 @@ data class Work(
     val updatedAt: String?
 )
 
+data class CommunityPublishRequest(
+    val workId: Long,
+    val title: String,
+    val description: String?
+)
+
+data class CommunityPublishResponse(
+    val contentId: Long
+)
+
+data class CommunityAuthor(
+    val userId: Long,
+    val nickname: String,
+    val avatarUrl: String?
+)
+
+data class CommunityContentSummary(
+    val contentId: Long,
+    val title: String,
+    val coverUrl: String?,
+    val author: CommunityAuthor,
+    val likeCount: Int,
+    val favoriteCount: Int,
+    val commentCount: Int,
+    val publishTime: String?
+)
+
+data class CommunityFeedResponse(
+    val items: List<CommunityContentSummary>,
+    val nextCursor: Long
+)
+
+data class CommunityViewerState(
+    val liked: Boolean,
+    val favorited: Boolean
+)
+
+data class CommunityContentDetail(
+    val contentId: Long,
+    val workId: Long,
+    val title: String,
+    val description: String?,
+    val mediaType: String,
+    val coverUrl: String?,
+    val mediaUrl: String?,
+    val author: CommunityAuthor,
+    val likeCount: Int,
+    val favoriteCount: Int,
+    val commentCount: Int,
+    val viewerState: CommunityViewerState,
+    val publishTime: String?
+)
+
+data class CommunityToggleRequest(val action: String = "TOGGLE")
+
+data class CommunityToggleResponse(
+    val liked: Boolean? = null,
+    val favorited: Boolean? = null,
+    val likeCount: Int? = null,
+    val favoriteCount: Int? = null
+)
+
+data class CommunityComment(
+    val commentId: Long,
+    val user: CommunityAuthor,
+    val text: String,
+    val createdAt: String?
+)
+
+data class CommunityCommentListResponse(
+    val items: List<CommunityComment>,
+    val nextCursor: Long
+)
+
+data class CommunityCreateCommentRequest(
+    val text: String
+)
+
+data class CommunityCreateCommentResponse(
+    val commentId: Long,
+    val commentCount: Int
+)
+

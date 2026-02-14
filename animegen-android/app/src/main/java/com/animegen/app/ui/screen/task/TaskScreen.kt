@@ -60,23 +60,23 @@ private fun TaskScreen(state: TaskUiState, onRetry: () -> Unit) {
         Text("Task")
         if (state.initializing) {
             Text("加载中...")
-            return
-        }
-        Text("taskId: ${state.taskId ?: "-"}")
-        Text("status: ${state.status}")
-        Text("stage: ${state.stage}")
-        LinearProgressIndicator(
-            progress = { (state.progress.coerceIn(0, 100) / 100f) },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Text("${state.progress}%")
-        if (!state.isPolling) {
-            Button(onClick = onRetry, enabled = state.taskId != null) {
-                Text("重试轮询")
+        } else {
+            Text("taskId: ${state.taskId ?: "-"}")
+            Text("status: ${state.status}")
+            Text("stage: ${state.stage}")
+            LinearProgressIndicator(
+                progress = { (state.progress.coerceIn(0, 100) / 100f) },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text("${state.progress}%")
+            if (!state.isPolling) {
+                Button(onClick = onRetry, enabled = state.taskId != null) {
+                    Text("重试轮询")
+                }
             }
-        }
-        if (state.errorMessage != null) {
-            ErrorNotice(message = state.errorMessage, onRetry = onRetry)
+            if (state.errorMessage != null) {
+                ErrorNotice(message = state.errorMessage, onRetry = onRetry)
+            }
         }
     }
 }

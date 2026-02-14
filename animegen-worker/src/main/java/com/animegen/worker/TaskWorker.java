@@ -108,16 +108,16 @@ public class TaskWorker {
 
             TaskDO current = taskMapper.findById(taskId);
             int currentRetry = current != null && current.getRetryCount() != null ? current.getRetryCount() : 0;
-            int nextRetry = currentRetry + 1;
-            if (nextRetry <= MAX_RETRY) {
+            if (currentRetry < MAX_RETRY) {
+                int nextRetry = currentRetry + 1;
                 workerTaskService.markRetry(taskId, nextRetry, message);
                 redisTemplate.opsForList().leftPush(TASK_QUEUE_KEY, payload);
                 writeTaskStatus(taskId, TaskStatus.PENDING.name(), 0, TaskStage.QUEUED.name(), "WORKER_RETRY", message);
                 log.warn("task retry taskId={}, retry={}/{}, msg={}", taskId, nextRetry, MAX_RETRY, message);
             } else {
-                workerTaskService.markFail(taskId, workId, nextRetry, message);
+                workerTaskService.markFail(taskId, workId, currentRetry, message);
                 writeTaskStatus(taskId, TaskStatus.FAIL.name(), 100, TaskStage.FAILED.name(), "WORKER_ERROR", message);
-                log.error("task fail taskId={}, retries={}, msg={}", taskId, nextRetry, message);
+                log.error("task fail taskId={}, retries={}, msg={}", taskId, currentRetry, message);
             }
         } catch (Exception ignored) {
             log.error("handleFail failed payload={}", payload, ignored);

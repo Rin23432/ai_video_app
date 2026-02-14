@@ -1,4 +1,4 @@
-﻿package com.animegen.app.ui.screen.works
+package com.animegen.app.ui.screen.works
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,13 +33,14 @@ fun WorksRoute(container: AppContainer, onOpenDetail: (Long) -> Unit) {
         WorksViewModel(container.worksRepository)
     })
     val state by vm.uiState.collectAsState()
+    val errorMessage = state.errorMessage
 
     LaunchedEffect(Unit) { vm.load() }
 
     Column(modifier = Modifier.fillMaxSize()) {
         if (state.loading) CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-        if (state.errorMessage != null) {
-            ErrorNotice(message = state.errorMessage, onRetry = vm::load)
+        if (errorMessage != null) {
+            ErrorNotice(message = errorMessage, onRetry = vm::load)
         }
         LazyColumn(
             modifier = Modifier
@@ -70,9 +71,8 @@ private fun WorkCard(work: Work, onClick: () -> Unit) {
             )
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(work.title)
-                Text("状态: ${work.status}")
+                Text("\u72b6\u6001: ${work.status}")
             }
         }
     }
 }
-

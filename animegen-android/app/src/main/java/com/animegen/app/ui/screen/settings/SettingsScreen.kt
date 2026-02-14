@@ -1,4 +1,4 @@
-﻿package com.animegen.app.ui.screen.settings
+package com.animegen.app.ui.screen.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +25,8 @@ fun SettingsRoute(container: AppContainer) {
         SettingsViewModel(container.preferences, container.authRepository)
     })
     val state by vm.uiState.collectAsState()
+    val message = state.message
+    val errorMessage = state.errorMessage
 
     Column(
         modifier = Modifier
@@ -33,6 +35,7 @@ fun SettingsRoute(container: AppContainer) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text("Settings")
+        Text("离线 Mock 模式: baseUrl 填 mock://offline")
         OutlinedTextField(
             value = state.baseUrl,
             onValueChange = vm::onBaseUrlChange,
@@ -49,8 +52,7 @@ fun SettingsRoute(container: AppContainer) {
             Text("保存")
         }
         if (state.saving) CircularProgressIndicator()
-        if (state.message != null) Text(state.message)
-        if (state.errorMessage != null) ErrorNotice(message = state.errorMessage, onRetry = vm::save)
+        if (message != null) Text(message)
+        if (errorMessage != null) ErrorNotice(message = errorMessage, onRetry = vm::save)
     }
 }
-

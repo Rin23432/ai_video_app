@@ -47,6 +47,7 @@ public class WorkService {
 
     @Transactional(rollbackFor = Exception.class)
     public CreateWorkResponse createWork(Long userId, CreateWorkRequest request) {
+        log.info("createWork start userId={}, traceId={}", userId, MDC.get("traceId"));
         String dedupeKey = buildDedupeKey(userId, request);
         String resultKey = dedupeKey + ":result";
         String lockKey = dedupeKey + ":lock";
@@ -93,6 +94,7 @@ public class WorkService {
             } catch (Exception ex) {
                 log.warn("failed to cache idempotent result key={}", resultKey, ex);
             }
+            log.info("createWork success userId={}, workId={}, taskId={}, traceId={}", userId, response.getWorkId(), response.getTaskId(), MDC.get("traceId"));
             return response;
         } catch (BizException ex) {
             throw ex;
@@ -121,6 +123,7 @@ public class WorkService {
         if (rows == 0) {
             throw new BizException(ErrorCodes.WORK_NOT_FOUND, "work not found");
         }
+        log.info("deleteWork success userId={}, workId={}, traceId={}", userId, workId, MDC.get("traceId"));
     }
 
     private void enqueueTask(Long userId, WorkDO work, TaskDO task) {

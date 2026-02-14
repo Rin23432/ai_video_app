@@ -29,11 +29,11 @@ class CreateViewModel(
     val uiState: StateFlow<CreateUiState> = _uiState.asStateFlow()
 
     fun onTitleChange(value: String) {
-        _uiState.update { it.copy(title = value) }
+        _uiState.update { it.copy(title = value, requestId = null) }
     }
 
     fun onPromptChange(value: String) {
-        _uiState.update { it.copy(prompt = value) }
+        _uiState.update { it.copy(prompt = value, requestId = null) }
     }
 
     fun submit() {

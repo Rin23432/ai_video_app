@@ -31,8 +31,10 @@
 - 修改：
 
 ```properties
-API_BASE_URL=http://10.0.2.2:8080
+API_BASE_URL=mock://offline
 ```
+
+`mock://offline` 为纯离线模式，不依赖后端服务。
 
 2. App 内动态修改（运行时）
 - 进入 `Settings` 页面修改 `baseUrl`
@@ -43,16 +45,23 @@ API_BASE_URL=http://10.0.2.2:8080
 2. 等待 Gradle Sync 完成
 3. 选择设备运行 `app`
 
+默认 `API_BASE_URL=mock://offline`，可离线跑通最小 Mock 流程（Create -> Task -> Works -> WorkDetail）。
+
 建议联调地址：
 - Android 模拟器访问宿主机后端：`http://10.0.2.2:8080`
 - 真机访问局域网后端：`http://<你的电脑局域网IP>:8080`
 
 ## 联调步骤
 1. 启动后端服务（确保 `api.http` 中接口可用）
-2. 打开 App `Settings`，确认 `baseUrl`
-3. 在 `Create` 输入标题和 prompt，点击 `POST /works`
-4. 自动进入 `Task` 轮询，成功后自动跳 `WorkDetail`
-5. 进入 `Works` 校验列表展示
+2. 可选导入最小 mock 数据：执行 `sql/mock-data.sql`
+3. 打开 App `Settings`，将 `baseUrl` 改为真实后端地址
+4. 在 `Create` 输入标题和 prompt，点击 `POST /works`
+5. 自动进入 `Task` 轮询，成功后自动跳 `WorkDetail`
+6. 进入 `Works` 校验列表展示
+
+说明：
+- `Create` 请求会携带并复用 `requestId`，重试可命中后端幂等。
+- `Task` 页面退出时会取消轮询，避免后台持续请求。
 
 ## 目录（关键）
 - `app/src/main/java/com/animegen/app/MainActivity.kt`：导航与页面装配
@@ -64,4 +73,3 @@ API_BASE_URL=http://10.0.2.2:8080
 - `app/src/main/java/com/animegen/app/ui/screen/workdetail/*`
 - `app/src/main/java/com/animegen/app/ui/screen/settings/*`
 - `app/src/main/java/com/animegen/app/ui/common/ErrorNotice.kt`：可见错误提示 + 重试按钮
-

@@ -17,6 +17,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.animegen.app.ui.screen.community.CommunityDetailRoute
+import com.animegen.app.ui.screen.community.CommunityFeedRoute
+import com.animegen.app.ui.screen.community.CommunityPublishRoute
+import com.animegen.app.ui.screen.community.MyFavoritesRoute
+import com.animegen.app.ui.screen.community.MyPublishedRoute
 import com.animegen.app.ui.screen.create.CreateRoute
 import com.animegen.app.ui.screen.settings.SettingsRoute
 import com.animegen.app.ui.screen.task.TaskRoute
@@ -45,6 +50,7 @@ private fun AppNav(container: AppContainer) {
         BottomItem("create", "Create"),
         BottomItem("task", "Task"),
         BottomItem("works", "Works"),
+        BottomItem("community/feed", "Community"),
         BottomItem("settings", "Settings")
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -104,8 +110,40 @@ private fun AppNav(container: AppContainer) {
             composable("workDetail/{workId}") { backStackEntry ->
                 WorkDetailRoute(
                     container = container,
-                    workIdArg = backStackEntry.arguments?.getString("workId")
+                    workIdArg = backStackEntry.arguments?.getString("workId"),
+                    onPublish = { workId -> navController.navigate("community/publish/$workId") }
                 )
+            }
+            composable("community/feed") {
+                CommunityFeedRoute(
+                    container = container,
+                    onOpenDetail = { contentId -> navController.navigate("community/detail/$contentId") },
+                    onOpenFavorites = { navController.navigate("community/myFavorites") },
+                    onOpenPublished = { navController.navigate("community/myPublished") }
+                )
+            }
+            composable("community/detail/{contentId}") { backStackEntry ->
+                CommunityDetailRoute(
+                    container = container,
+                    contentIdArg = backStackEntry.arguments?.getString("contentId")
+                )
+            }
+            composable("community/publish/{workId}") { backStackEntry ->
+                CommunityPublishRoute(
+                    container = container,
+                    workIdArg = backStackEntry.arguments?.getString("workId"),
+                    onDone = { contentId -> navController.navigate("community/detail/$contentId") }
+                )
+            }
+            composable("community/myFavorites") {
+                MyFavoritesRoute(container = container) { contentId ->
+                    navController.navigate("community/detail/$contentId")
+                }
+            }
+            composable("community/myPublished") {
+                MyPublishedRoute(container = container) { contentId ->
+                    navController.navigate("community/detail/$contentId")
+                }
             }
             composable("settings") {
                 SettingsRoute(container = container)
