@@ -3,6 +3,7 @@
 sealed class AppError(open val displayMessage: String) {
     data class Network(override val displayMessage: String = "网络连接失败，请检查网络后重试") : AppError(displayMessage)
     data class Unauthorized(override val displayMessage: String = "登录态失效，请重试") : AppError(displayMessage)
+    data class LoginRequired(override val displayMessage: String = "请先登录后再操作") : AppError(displayMessage)
     data class Server(override val displayMessage: String = "服务暂时不可用，请稍后重试") : AppError(displayMessage)
     data class Business(val code: Int, override val displayMessage: String) : AppError(displayMessage)
     data class TaskFailed(override val displayMessage: String) : AppError(displayMessage)

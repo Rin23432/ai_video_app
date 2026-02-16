@@ -10,12 +10,12 @@ import java.util.Locale;
 @Component
 public class SensitiveWordFilter {
     private static final List<String> WORDS = List.of(
-            "傻逼",
-            "操你",
+            "sb",
+            "cao",
             "fuck",
             "nazi",
-            "色情",
-            "毒品"
+            "porn",
+            "drug"
     );
 
     public void validate(String text) {

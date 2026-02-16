@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.animegen.app-mergeDebugResources-71:/values-large-v4/values-large-v4.xml",
+            "outputFile": "com.animegen.app-mergeDebugResources-72:/values-large-v4/values-large-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\rin\\.gradle\\caches\\8.13\\transforms\\90190457814aca60ff356cf4f08ad177\\transformed\\appcompat-1.6.1\\res\\values-large-v4\\values-large-v4.xml",
+                    "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\caches\\8.13\\transforms\\90190457814aca60ff356cf4f08ad177\\transformed\\appcompat-1.6.1\\res\\values-large-v4\\values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\rin\\.gradle\\caches\\8.13\\transforms\\ed4217fcc561d1b92a7aa6ca4640e5fe\\transformed\\material-1.12.0\\res\\values-large-v4\\values-large-v4.xml",
+                    "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\caches\\8.13\\transforms\\ed4217fcc561d1b92a7aa6ca4640e5fe\\transformed\\material-1.12.0\\res\\values-large-v4\\values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",

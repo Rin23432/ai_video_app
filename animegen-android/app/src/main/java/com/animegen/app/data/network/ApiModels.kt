@@ -6,14 +6,47 @@ data class ApiResponse<T>(
     val data: T?
 )
 
+data class AuthUserInfo(
+    val userId: Long,
+    val nickname: String,
+    val role: String,
+    val avatarUrl: String?
+)
+
 data class GuestTokenRequest(val deviceId: String)
-data class GuestTokenResponse(val token: String, val userId: Long)
+data class GuestTokenResponse(val token: String, val user: AuthUserInfo)
+data class LoginRequest(val username: String, val password: String)
+data class RegisterRequest(val username: String, val password: String, val nickname: String)
+data class AuthTokenResponse(val token: String, val user: AuthUserInfo)
+
+data class UserStats(
+    val published: Int,
+    val favorites: Int,
+    val likesReceived: Int
+)
+
+data class MeProfile(
+    val userId: Long,
+    val username: String?,
+    val nickname: String,
+    val avatarUrl: String?,
+    val bio: String?,
+    val role: String,
+    val stats: UserStats
+)
+
+data class UpdateProfileRequest(
+    val nickname: String,
+    val bio: String?,
+    val avatarUrl: String?
+)
 
 data class CreateWorkRequest(
     val requestId: String,
     val title: String,
     val prompt: String,
     val styleId: String,
+    val apiKey: String,
     val aspectRatio: String,
     val durationSec: Int,
     val mode: String
@@ -48,7 +81,8 @@ data class Work(
 data class CommunityPublishRequest(
     val workId: Long,
     val title: String,
-    val description: String?
+    val description: String?,
+    val tagIds: List<Long> = emptyList()
 )
 
 data class CommunityPublishResponse(
@@ -75,6 +109,25 @@ data class CommunityContentSummary(
 data class CommunityFeedResponse(
     val items: List<CommunityContentSummary>,
     val nextCursor: Long
+)
+
+data class CommunityTag(
+    val tagId: Long,
+    val name: String,
+    val contentCount: Int,
+    val hotScore: Long
+)
+
+data class CommunityTagListResponse(
+    val items: List<CommunityTag>
+)
+
+data class CommunityTagDetail(
+    val tagId: Long,
+    val name: String,
+    val description: String?,
+    val contentCount: Int,
+    val hotScore: Long
 )
 
 data class CommunityViewerState(

@@ -12,4 +12,7 @@ public interface ContentFavoriteMapper {
 
     @Select("SELECT COUNT(1) > 0 FROM content_favorite WHERE content_id = #{contentId} AND user_id = #{userId}")
     boolean exists(@Param("contentId") Long contentId, @Param("userId") Long userId);
+
+    @Select("SELECT COUNT(1) FROM content_favorite WHERE user_id = #{userId}")
+    int countByUserId(@Param("userId") Long userId);
 }

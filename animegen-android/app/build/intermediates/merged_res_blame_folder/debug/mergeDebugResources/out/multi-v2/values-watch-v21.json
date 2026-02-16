@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.animegen.app-mergeDebugResources-71:/values-watch-v21/values-watch-v21.xml",
+            "outputFile": "com.animegen.app-mergeDebugResources-72:/values-watch-v21/values-watch-v21.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\rin\\.gradle\\caches\\8.13\\transforms\\90190457814aca60ff356cf4f08ad177\\transformed\\appcompat-1.6.1\\res\\values-watch-v21\\values-watch-v21.xml",
+                    "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\caches\\8.13\\transforms\\90190457814aca60ff356cf4f08ad177\\transformed\\appcompat-1.6.1\\res\\values-watch-v21\\values-watch-v21.xml",
                     "from": {
                         "startLines": "2,6,10",
                         "startColumns": "4,4,4",

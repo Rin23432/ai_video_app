@@ -30,18 +30,18 @@ public class WorkController {
     }
 
     @GetMapping
-    public ApiResponse<List<WorkDO>> list(@RequestParam(defaultValue = "0") @Min(0) Long cursor,
-                                          @RequestParam(defaultValue = "20") @Min(1) @Max(100) Integer limit) {
+    public ApiResponse<List<WorkDO>> list(@RequestParam(name = "cursor", defaultValue = "0") @Min(0) Long cursor,
+                                          @RequestParam(name = "limit", defaultValue = "20") @Min(1) @Max(100) Integer limit) {
         return ApiResponse.ok(workService.listWorks(AuthContext.getUserId(), cursor, limit));
     }
 
     @GetMapping("/{workId}")
-    public ApiResponse<WorkDO> detail(@PathVariable @Min(1) Long workId) {
+    public ApiResponse<WorkDO> detail(@PathVariable("workId") @Min(1) Long workId) {
         return ApiResponse.ok(workService.getWork(AuthContext.getUserId(), workId));
     }
 
     @DeleteMapping("/{workId}")
-    public ApiResponse<Boolean> delete(@PathVariable @Min(1) Long workId) {
+    public ApiResponse<Boolean> delete(@PathVariable("workId") @Min(1) Long workId) {
         workService.deleteWork(AuthContext.getUserId(), workId);
         return ApiResponse.ok(true);
     }

@@ -1,0 +1,237 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 264241152 bytes. Error detail: G1 virtual space
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   This process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3618), pid=39992, tid=8788
+#
+# JRE version:  (17.0.18+8) (build )
+# Java VM: OpenJDK 64-Bit Server VM (17.0.18+8, mixed mode, emulated-client, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -XX:TieredStopAtLevel=1 com.animegen.worker.AnimeGenWorkerApplication
+
+Host: 12th Gen Intel(R) Core(TM) i7-12700H, 20 cores, 15G,  Windows 11 , 64 bit Build 26100 (10.0.26100.5074)
+Time: Mon Feb 16 01:15:12 2026  Windows 11 , 64 bit Build 26100 (10.0.26100.5074) elapsed time: 0.021402 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000024bf241e1e0):  JavaThread "Unknown thread" [_thread_in_vm, id=8788, stack(0x00000054ac500000,0x00000054ac600000)]
+
+Stack: [0x00000054ac500000,0x00000054ac600000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x6846f9]
+V  [jvm.dll+0x839ea5]
+V  [jvm.dll+0x83b91e]
+V  [jvm.dll+0x83bfa3]
+V  [jvm.dll+0x248eff]
+V  [jvm.dll+0x6814b9]
+V  [jvm.dll+0x6762ba]
+V  [jvm.dll+0x309257]
+V  [jvm.dll+0x310826]
+V  [jvm.dll+0x360d9e]
+V  [jvm.dll+0x360fdd]
+V  [jvm.dll+0x2e02dc]
+V  [jvm.dll+0x2e11e8]
+V  [jvm.dll+0x80cd6b]
+V  [jvm.dll+0x36ea21]
+V  [jvm.dll+0x7eb945]
+V  [jvm.dll+0x3f462b]
+V  [jvm.dll+0x3f6111]
+C  [jli.dll+0x52d0]
+C  [ucrtbase.dll+0x37b0]
+C  [KERNEL32.DLL+0x2e8d7]
+C  [ntdll.dll+0x8d9c]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ffc10bc7f58, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x0000024bf4745730 GCTaskThread "GC Thread#0" [stack: 0x00000054ac600000,0x00000054ac700000] [id=37180]
+  0x0000024bf4756090 ConcurrentGCThread "G1 Main Marker" [stack: 0x00000054ac700000,0x00000054ac800000] [id=22232]
+  0x0000024bf4757780 ConcurrentGCThread "G1 Conc#0" [stack: 0x00000054ac800000,0x00000054ac900000] [id=41844]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffc10380e07]
+
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x0000024bf241ced0] Heap_lock - owner thread: 0x0000024bf241e1e0
+
+Heap address: 0x0000000705e00000, size: 4002 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 1.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+<Empty>
+
+Heap:
+ garbage-first heap   total 0K, used 0K [0x0000000705e00000, 0x0000000800000000)
+  region size 2048K, 0 young (0K), 0 survivors (0K)
+
+[error occurred during error reporting (printing heap information), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffc1076dd09]
+
+GC Heap History (0 events):
+No events
+
+Dll operation events (1 events):
+Event: 0.012 Loaded shared library C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\java.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes loaded (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Memory protections (0 events):
+No events
+
+Nmethod flushes (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff76a4e0000 - 0x00007ff76a4ee000 	C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\java.exe
+0x00007ffd19c60000 - 0x00007ffd19ec9000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x00007ffd18340000 - 0x00007ffd18409000 	C:\WINDOWS\System32\KERNEL32.DLL
+0x00007ffd16ea0000 - 0x00007ffd17293000 	C:\WINDOWS\System32\KERNELBASE.dll
+0x00007ffd175c0000 - 0x00007ffd1770b000 	C:\WINDOWS\System32\ucrtbase.dll
+0x00007ffce4220000 - 0x00007ffce4238000 	C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\jli.dll
+0x00007ffce4270000 - 0x00007ffce428e000 	C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\VCRUNTIME140.dll
+0x00007ffd18f20000 - 0x00007ffd190e4000 	C:\WINDOWS\System32\USER32.dll
+0x00007ffd17590000 - 0x00007ffd175b7000 	C:\WINDOWS\System32\win32u.dll
+0x00007ffcfb7a0000 - 0x00007ffcfba33000 	C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.5074_none_3e0d6f78e32fd63f\COMCTL32.dll
+0x00007ffd18280000 - 0x00007ffd182ab000 	C:\WINDOWS\System32\GDI32.dll
+0x00007ffd17bd0000 - 0x00007ffd17c79000 	C:\WINDOWS\System32\msvcrt.dll
+0x00007ffd17900000 - 0x00007ffd17a2d000 	C:\WINDOWS\System32\gdi32full.dll
+0x00007ffd16df0000 - 0x00007ffd16e93000 	C:\WINDOWS\System32\msvcp_win.dll
+0x00007ffd19ae0000 - 0x00007ffd19b0f000 	C:\WINDOWS\System32\IMM32.DLL
+0x00007ffcfb040000 - 0x00007ffcfb04c000 	C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\vcruntime140_1.dll
+0x00007ffcd6a40000 - 0x00007ffcd6acd000 	C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\msvcp140.dll
+0x00007ffc10090000 - 0x00007ffc10cfb000 	C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\server\jvm.dll
+0x00007ffd189d0000 - 0x00007ffd18a84000 	C:\WINDOWS\System32\ADVAPI32.dll
+0x00007ffd181d0000 - 0x00007ffd18276000 	C:\WINDOWS\System32\sechost.dll
+0x00007ffd18020000 - 0x00007ffd18138000 	C:\WINDOWS\System32\RPCRT4.dll
+0x00007ffd19b20000 - 0x00007ffd19b94000 	C:\WINDOWS\System32\WS2_32.dll
+0x00007ffd0ac50000 - 0x00007ffd0ac85000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x00007ffd0e8c0000 - 0x00007ffd0e8cb000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x00007ffd159d0000 - 0x00007ffd15a2e000 	C:\WINDOWS\SYSTEM32\POWRPROF.dll
+0x00007ffd159b0000 - 0x00007ffd159c4000 	C:\WINDOWS\SYSTEM32\UMPDC.dll
+0x00007ffd15c90000 - 0x00007ffd15cab000 	C:\WINDOWS\SYSTEM32\kernel.appcore.dll
+0x00007ffcfae60000 - 0x00007ffcfae6a000 	C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\jimage.dll
+0x00007ffd145e0000 - 0x00007ffd14822000 	C:\WINDOWS\SYSTEM32\DBGHELP.DLL
+0x00007ffd17c80000 - 0x00007ffd17ffb000 	C:\WINDOWS\System32\combase.dll
+0x00007ffd18710000 - 0x00007ffd187e7000 	C:\WINDOWS\System32\OLEAUT32.dll
+0x00007ffcf8d00000 - 0x00007ffcf8d3d000 	C:\WINDOWS\SYSTEM32\dbgcore.DLL
+0x00007ffd177a0000 - 0x00007ffd17839000 	C:\WINDOWS\System32\bcryptPrimitives.dll
+0x00007ffce10d0000 - 0x00007ffce10f5000 	C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\java.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin;C:\WINDOWS\SYSTEM32;C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.5074_none_3e0d6f78e32fd63f;C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\server
+
+VM Arguments:
+jvm_args: -XX:TieredStopAtLevel=1 
+java_command: com.animegen.worker.AnimeGenWorkerApplication
+java_class_path (initial): E:\projrcts\ai_web\animegen-worker\target\classes;D:\Repository\com\animegen\animegen-common\0.1.0-SNAPSHOT\animegen-common-0.1.0-SNAPSHOT.jar;D:\Repository\com\animegen\animegen-dao\0.1.0-SNAPSHOT\animegen-dao-0.1.0-SNAPSHOT.jar;D:\Repository\com\animegen\animegen-ai\0.1.0-SNAPSHOT\animegen-ai-0.1.0-SNAPSHOT.jar;D:\Repository\com\animegen\animegen-service\0.1.0-SNAPSHOT\animegen-service-0.1.0-SNAPSHOT.jar;D:\Repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.31\tomcat-embed-el-10.1.31.jar;D:\Repository\org\hibernate\validator\hibernate-validator\8.0.1.Final\hibernate-validator-8.0.1.Final.jar;D:\Repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;D:\Repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;D:\Repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;D:\Repository\org\springframework\boot\spring-boot\3.3.5\spring-boot-3.3.5.jar;D:\Repository\org\springframework\spring-context\6.1.14\spring-context-6.1.14.jar;D:\Repository\org\springframework\spring-expression\6.1.14\spring-expression-6.1.14.jar;D:\Repository\io\micrometer\micrometer-observation\1.13.6\micrometer-observation-1.13.6.jar;D:\Repository\io\micrometer\micrometer-commons\1.13.6\micrometer-commons-1.13.6.jar;D:\Repository\org\springframework\boot\spring-boot-autoconfigure\3.3.5\spring-boot-autoconfigure-3.3.5.jar;D:\Repository\ch\qos\logback\logback-classic\1.5.11\logback-classic-1.5.11.jar;D:\Repository\ch\qos\logback\logback-core\1.5.11\logback-core-1.5.11.jar;D:\Repository\org\apache\logging\log4j\log4j-to-slf4j\2.23.1\log4j-to-slf4j-2.23.1.jar;D:\Repository\org\apache\logging\log4j\log4j-api\2.23.1\log4j-api-2.23.1.jar;D:\Repository\org\slf4j\jul-to-slf4j\2.0.16\jul-to-slf4j-2.0.16.jar;D:\Repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;D:\Repository\org\springframework\spring-core\6.1.14\spring-core-6.1.14.jar;D:\Repository\org\springframewo
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 12                                        {product} {ergonomic}
+     uint ConcGCThreads                            = 4                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 15                                        {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 2097152                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 264241152                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 4196401152                                {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 2097152                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 0                                      {pd product} {ergonomic}
+     bool ProfileInterpreter                       = false                                  {pd product} {command line}
+    uintx ProfiledCodeHeapSize                     = 0                                      {pd product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 4196401152                             {manageable} {ergonomic}
+     intx TieredStopAtLevel                        = 1                                         {product} {command line}
+     bool UseCompressedClassPointers               = true                           {product lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\
+PATH=D:\Ancaonda\condabin;c:\Users\rin\AppData\Roaming\Code\User\globalStorage\github.copilot-chat\debugCommand;c:\Users\rin\AppData\Roaming\Code\User\globalStorage\github.copilot-chat\copilotCli;C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-8.0.482.8-hotspot\bin;E:\VulkanSDK\1.3.275.0\Bin;E:\vullkan\Bin;D:\Ancaonda\condabin;E:\vk\Bin;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\dotnet\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\MySQL\MySQL Server 8.3\bin;D:\maven\apache-maven-3.6.3\bin;D:\Git\cmd;C:\Program Files\nodejs\;c:\Users\rin\AppData\Local\Programs\cursor\resources\app\bin;C:\Program Files\Common Files\Autodesk Shared\;C:\Program Files\NVIDIA Corporation\NVIDIA app\NvDLISR;C:\Program Files (x86)\GtkSharp\2.12\bin;E:\cmake\bin;E:\tools\;E:\New Folder\bin;;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Docker\Docker\resources\bin;e:\Trae CN\bin;C:\Users\rin\AppData\Local\Microsoft\WindowsApps;C:\Users\rin\.dotnet\tools;D:\soft\Microsoft VS Code\bin;C:\Users\rin\AppData\Local\GitHubDesktop\bin;D:\IntelliJ IDEA 2023.3.4\bin;D:\apache-tomcat-8.5.100-windows-x64\apache-tomcat-8\bin;D:\apache-tomcat-8.5.100-windows-x64\apache-tomcat-8\lib;D:\PyCharm 2024.2.3\bin;C:\Users\rin\AppData\Roaming\npm;E:\JetBrains Rider 2024.3.6\bin;D:\Ancaonda;D:\Ancaonda\Scripts;D:\Ancaonda\Library\mingw-w64\bin;D:\Ancaonda\Library\usr\bin;C:\Users\rin\AppData\Local\Programs\cursor\resources\app\bin;E:\mdbSl\;E:\mingw\bin;E:\sdk\platform-tools;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps;c:\Users\rin\.vscode\extensions\vscjava.vscode-java-debug-0.58.5\bundled\scripts\noConfigScripts
+USERNAME=rin
+LANG=zh_CN.UTF-8
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 154 Stepping 3, GenuineIntel
+TMP=C:\Users\rin\AppData\Local\Temp
+TEMP=C:\Users\rin\AppData\Local\Temp
+
+
+
+Periodic native trim disabled
+
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 26100 (10.0.26100.5074)
+OS uptime: 0 days 1:45 hours
+Hyper-V role detected
+
+CPU: total 20 (initial active 20) (10 cores per cpu, 2 threads per core) family 6 model 154 stepping 3 microcode 0x429, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, sha, fma, vzeroupper, clflush, clflushopt, clwb, hv
+Processor Information for all 20 processors :
+  Max Mhz: 2300, Current Mhz: 2300, Mhz Limit: 2300
+
+Memory: 4k page, system-wide physical 16004M (425M free)
+TotalPageFile size 33506M (AvailPageFile size 74M)
+current process WorkingSet (physical memory assigned to process): 12M, peak: 12M
+current process commit charge ("private bytes"): 70M, peak: 322M
+
+vm_info: OpenJDK 64-Bit Server VM (17.0.18+8) for windows-amd64 JRE (17.0.18+8), built on Jan 20 2026 22:28:22 by "admin" with MS VC++ 17.12 (VS2022)
+
+END.

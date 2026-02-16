@@ -34,6 +34,16 @@ public interface ContentMapper {
             "ORDER BY hot_score DESC, publish_time DESC, id DESC LIMIT #{limit} OFFSET #{offset}")
     List<ContentDO> listPublishedByHot(@Param("offset") Long offset, @Param("limit") Integer limit);
 
+    @Select("SELECT c.* FROM content_tag ct JOIN content c ON c.id = ct.content_id " +
+            "WHERE ct.tag_id = #{tagId} AND c.status = 'PUBLISHED' " +
+            "ORDER BY c.publish_time DESC, c.id DESC LIMIT #{limit} OFFSET #{offset}")
+    List<ContentDO> listPublishedByTagLatest(@Param("tagId") Long tagId, @Param("offset") Long offset, @Param("limit") Integer limit);
+
+    @Select("SELECT c.* FROM content_tag ct JOIN content c ON c.id = ct.content_id " +
+            "WHERE ct.tag_id = #{tagId} AND c.status = 'PUBLISHED' " +
+            "ORDER BY c.hot_score DESC, c.publish_time DESC, c.id DESC LIMIT #{limit} OFFSET #{offset}")
+    List<ContentDO> listPublishedByTagHot(@Param("tagId") Long tagId, @Param("offset") Long offset, @Param("limit") Integer limit);
+
     @Select("SELECT * FROM content WHERE author_id = #{authorId} AND status != 'REMOVED' " +
             "ORDER BY id DESC LIMIT #{limit} OFFSET #{offset}")
     List<ContentDO> listMine(@Param("authorId") Long authorId, @Param("offset") Long offset, @Param("limit") Integer limit);
@@ -42,6 +52,12 @@ public interface ContentMapper {
             "WHERE f.user_id = #{userId} AND c.status = 'PUBLISHED' " +
             "ORDER BY f.id DESC LIMIT #{limit} OFFSET #{offset}")
     List<ContentDO> listMyFavorites(@Param("userId") Long userId, @Param("offset") Long offset, @Param("limit") Integer limit);
+
+    @Select("SELECT COUNT(1) FROM content WHERE author_id = #{authorId} AND status = 'PUBLISHED'")
+    int countPublishedByAuthor(@Param("authorId") Long authorId);
+
+    @Select("SELECT COALESCE(SUM(like_count), 0) FROM content WHERE author_id = #{authorId} AND status != 'REMOVED'")
+    int sumLikesReceived(@Param("authorId") Long authorId);
 
     @Update("UPDATE content SET status = 'HIDDEN', updated_at = NOW() WHERE id = #{id} AND author_id = #{authorId} AND status = 'PUBLISHED'")
     int hideByAuthor(@Param("id") Long id, @Param("authorId") Long authorId);

@@ -7,10 +7,12 @@ public final class ErrorCodes {
     public static final int INVALID_PARAM = 4000;
     public static final int DEVICE_ID_REQUIRED = 4001;
     public static final int UNAUTHORIZED = 4010;
+    public static final int LOGIN_REQUIRED = 40100;
     public static final int WORK_NOT_FOUND = 4040;
     public static final int TASK_NOT_FOUND = 4041;
     public static final int CONTENT_NOT_FOUND = 4042;
     public static final int COMMENT_NOT_FOUND = 4043;
+    public static final int TAG_NOT_FOUND = 4044;
     public static final int DUPLICATE_REQUEST_IN_PROGRESS = 4090;
     public static final int CONTENT_ALREADY_PUBLISHED = 4091;
     public static final int PERMISSION_DENIED = 4030;

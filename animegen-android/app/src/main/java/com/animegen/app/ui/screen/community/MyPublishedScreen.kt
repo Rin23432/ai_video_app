@@ -1,4 +1,4 @@
-package com.animegen.app.ui.screen.community
+﻿package com.animegen.app.ui.screen.community
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,11 +7,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.animegen.app.AppContainer
+import com.animegen.app.R
 import com.animegen.app.data.network.CommunityContentSummary
 import com.animegen.app.data.repo.AppResult
 import com.animegen.app.data.repo.CommunityRepository
@@ -65,17 +67,18 @@ fun MyPublishedRoute(container: AppContainer, onOpenDetail: (Long) -> Unit) {
     LaunchedEffect(Unit) { vm.load() }
 
     Column(modifier = Modifier.fillMaxSize().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("My Published")
+        Text(stringResource(R.string.my_published_title))
         if (state.loading) CircularProgressIndicator()
-        if (state.errorMessage != null) ErrorNotice(message = state.errorMessage, onRetry = vm::load)
+        val errorMessage = state.errorMessage
+        if (errorMessage != null) ErrorNotice(message = errorMessage, onRetry = vm::load)
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.items, key = { it.contentId }) { item ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(item.title, modifier = Modifier.clickable { onOpenDetail(item.contentId) })
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = { vm.hide(item.contentId) }) { Text("Hide") }
-                            Button(onClick = { vm.remove(item.contentId) }) { Text("Delete") }
+                            OutlinedButton(onClick = { vm.hide(item.contentId) }) { Text(stringResource(R.string.my_published_hide)) }
+                            Button(onClick = { vm.remove(item.contentId) }) { Text(stringResource(R.string.my_published_delete)) }
                         }
                     }
                 }
@@ -83,3 +86,7 @@ fun MyPublishedRoute(container: AppContainer, onOpenDetail: (Long) -> Unit) {
         }
     }
 }
+
+
+
+

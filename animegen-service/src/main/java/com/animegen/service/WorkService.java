@@ -86,7 +86,7 @@ public class WorkService {
             task.setTraceId(traceId == null || traceId.isBlank() ? UUID.randomUUID().toString().replace("-", "") : traceId);
             taskMapper.insert(task);
 
-            enqueueTask(userId, work, task);
+            enqueueTask(userId, work, task, request);
             writeTaskStatusCache(task);
             CreateWorkResponse response = new CreateWorkResponse(work.getId(), task.getId());
             try {
@@ -126,13 +126,15 @@ public class WorkService {
         log.info("deleteWork success userId={}, workId={}, traceId={}", userId, workId, MDC.get("traceId"));
     }
 
-    private void enqueueTask(Long userId, WorkDO work, TaskDO task) {
+    private void enqueueTask(Long userId, WorkDO work, TaskDO task, CreateWorkRequest request) {
         try {
             Map<String, Object> payload = new HashMap<>();
             payload.put("taskId", task.getId());
             payload.put("workId", work.getId());
             payload.put("userId", userId);
             payload.put("prompt", work.getPrompt());
+            payload.put("modelId", request.getModelId());
+            payload.put("apiKey", request.getApiKey());
             payload.put("styleId", work.getStyleId());
             payload.put("aspectRatio", work.getAspectRatio());
             payload.put("durationSec", work.getDurationSec());
@@ -157,7 +159,7 @@ public class WorkService {
         String token = request.getRequestId();
         if (token == null || token.isBlank()) {
             String raw = userId + "|" + request.getTitle() + "|" + request.getPrompt() + "|" + request.getStyleId()
-                    + "|" + request.getAspectRatio() + "|" + request.getDurationSec() + "|" + request.getMode();
+                    + "|" + request.getModelId() + "|" + request.getAspectRatio() + "|" + request.getDurationSec() + "|" + request.getMode();
             token = DigestUtils.md5DigestAsHex(raw.getBytes(StandardCharsets.UTF_8));
         }
         return "idem:works:" + userId + ":" + token;

@@ -22,7 +22,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public ApiResponse<TaskStatusResponse> detail(@PathVariable @Min(1) Long taskId) {
+    public ApiResponse<TaskStatusResponse> detail(@PathVariable("taskId") @Min(1) Long taskId) {
         return ApiResponse.ok(taskService.getTask(AuthContext.getUserId(), taskId));
     }
 }

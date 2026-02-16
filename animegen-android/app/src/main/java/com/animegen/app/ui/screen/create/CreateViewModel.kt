@@ -15,6 +15,7 @@ import java.util.UUID
 data class CreateUiState(
     val title: String = "",
     val prompt: String = "",
+    val apiKey: String = "",
     val requestId: String? = null,
     val isSubmitting: Boolean = false,
     val errorMessage: String? = null,
@@ -36,10 +37,14 @@ class CreateViewModel(
         _uiState.update { it.copy(prompt = value, requestId = null) }
     }
 
+    fun onApiKeyChange(value: String) {
+        _uiState.update { it.copy(apiKey = value, requestId = null) }
+    }
+
     fun submit() {
         val state = _uiState.value
-        if (state.title.isBlank() || state.prompt.isBlank()) {
-            _uiState.update { it.copy(errorMessage = "标题和 Prompt 不能为空") }
+        if (state.title.isBlank() || state.prompt.isBlank() || state.apiKey.isBlank()) {
+            _uiState.update { it.copy(errorMessage = "标题、提示词、接口密钥不能为空") }
             return
         }
         viewModelScope.launch {
@@ -50,6 +55,7 @@ class CreateViewModel(
                 title = state.title,
                 prompt = state.prompt,
                 styleId = "anime_shonen",
+                apiKey = state.apiKey.trim(),
                 aspectRatio = "9:16",
                 durationSec = 30,
                 mode = "CLOUD"
@@ -83,4 +89,6 @@ class CreateViewModel(
         _uiState.update { it.copy(createdTaskId = null, createdWorkId = null) }
     }
 }
+
+
 

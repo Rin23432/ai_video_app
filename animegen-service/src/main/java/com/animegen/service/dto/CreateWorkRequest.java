@@ -16,6 +16,10 @@ public class CreateWorkRequest {
     @NotBlank
     @Size(max = 64)
     private String styleId;
+    @Size(max = 64)
+    private String modelId;
+    @Size(max = 256)
+    private String apiKey;
     @NotBlank
     @Pattern(regexp = "^[0-9]+:[0-9]+$")
     private String aspectRatio;
@@ -35,6 +39,10 @@ public class CreateWorkRequest {
     public void setPrompt(String prompt) { this.prompt = prompt; }
     public String getStyleId() { return styleId; }
     public void setStyleId(String styleId) { this.styleId = styleId; }
+    public String getModelId() { return modelId; }
+    public void setModelId(String modelId) { this.modelId = modelId; }
+    public String getApiKey() { return apiKey; }
+    public void setApiKey(String apiKey) { this.apiKey = apiKey; }
     public String getAspectRatio() { return aspectRatio; }
     public void setAspectRatio(String aspectRatio) { this.aspectRatio = aspectRatio; }
     public Integer getDurationSec() { return durationSec; }

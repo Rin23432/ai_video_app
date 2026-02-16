@@ -3,12 +3,33 @@ USE animegen;
 
 CREATE TABLE IF NOT EXISTS `user` (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(64) NOT NULL,
+    username VARCHAR(64) NULL,
     password_hash VARCHAR(255) NULL,
-    role VARCHAR(32) NOT NULL DEFAULT 'USER',
+    phone VARCHAR(32) NULL,
+    nickname VARCHAR(64) NOT NULL,
+    avatar_url VARCHAR(512) NULL,
+    bio VARCHAR(256) NULL,
+    role VARCHAR(16) NOT NULL DEFAULT 'GUEST',
+    device_id VARCHAR(64) NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_username(username),
+    UNIQUE KEY uk_phone(phone),
+    UNIQUE KEY uk_device_id(device_id),
+    INDEX idx_role(role)
 );
+
+ALTER TABLE `user`
+    ADD COLUMN IF NOT EXISTS phone VARCHAR(32) NULL,
+    ADD COLUMN IF NOT EXISTS nickname VARCHAR(64) NOT NULL DEFAULT 'Guest',
+    ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(512) NULL,
+    ADD COLUMN IF NOT EXISTS bio VARCHAR(256) NULL,
+    ADD COLUMN IF NOT EXISTS device_id VARCHAR(64) NULL;
+
+ALTER TABLE `user`
+    MODIFY COLUMN username VARCHAR(64) NULL,
+    MODIFY COLUMN role VARCHAR(16) NOT NULL DEFAULT 'GUEST';
+
 
 CREATE TABLE IF NOT EXISTS work (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -106,4 +127,28 @@ CREATE TABLE IF NOT EXISTS content_comment (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_comment_content(content_id, created_at),
     INDEX idx_comment_user(user_id, created_at)
+);
+
+CREATE TABLE IF NOT EXISTS tag (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(64) NOT NULL,
+    description VARCHAR(255) NULL,
+    content_count INT NOT NULL DEFAULT 0,
+    hot_score BIGINT NOT NULL DEFAULT 0,
+    status VARCHAR(16) NOT NULL DEFAULT 'ACTIVE',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_tag_name(name),
+    INDEX idx_tag_hot_score(hot_score),
+    INDEX idx_tag_status_hot(status, hot_score)
+);
+
+CREATE TABLE IF NOT EXISTS content_tag (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    content_id BIGINT NOT NULL,
+    tag_id BIGINT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_content_tag(content_id, tag_id),
+    INDEX idx_tag_content(tag_id, content_id),
+    INDEX idx_content_tag(content_id, tag_id)
 );

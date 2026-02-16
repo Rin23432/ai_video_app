@@ -19,11 +19,11 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String auth = request.getHeader("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {
-            throw new BizException(ErrorCodes.UNAUTHORIZED, "missing or invalid Authorization header");
+            throw new BizException(ErrorCodes.LOGIN_REQUIRED, "login required");
         }
         String userId = JwtUtils.verifyAndGetUserId(auth.substring(7), jwtSecret);
         if (userId == null) {
-            throw new BizException(ErrorCodes.UNAUTHORIZED, "token invalid or expired");
+            throw new BizException(ErrorCodes.LOGIN_REQUIRED, "token invalid or expired");
         }
         AuthContext.setUserId(Long.parseLong(userId));
         return true;

@@ -1,4 +1,4 @@
-package com.animegen.app.ui.screen.settings
+﻿package com.animegen.app.ui.screen.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.animegen.app.AppContainer
+import com.animegen.app.R
 import com.animegen.app.ui.common.ErrorNotice
 import com.animegen.app.ui.common.viewModelFactory
 
@@ -34,25 +36,28 @@ fun SettingsRoute(container: AppContainer) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("Settings")
-        Text("离线 Mock 模式: baseUrl 填 mock://offline")
+        Text(stringResource(R.string.settings_title))
+        Text(stringResource(R.string.settings_offline_hint))
         OutlinedTextField(
             value = state.baseUrl,
             onValueChange = vm::onBaseUrlChange,
-            label = { Text("baseUrl") },
+            label = { Text(stringResource(R.string.settings_base_url)) },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = state.deviceId,
             onValueChange = vm::onDeviceIdChange,
-            label = { Text("deviceId") },
+            label = { Text(stringResource(R.string.settings_device_id)) },
             modifier = Modifier.fillMaxWidth()
         )
         Button(onClick = vm::save, enabled = !state.saving) {
-            Text("保存")
+            Text(stringResource(R.string.settings_save))
         }
         if (state.saving) CircularProgressIndicator()
         if (message != null) Text(message)
         if (errorMessage != null) ErrorNotice(message = errorMessage, onRetry = vm::save)
     }
 }
+
+
+

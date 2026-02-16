@@ -10,7 +10,8 @@ import com.animegen.app.data.network.safeApiCall
 class WorksRepository(
     private val apiService: ApiService,
     private val authRepository: AuthRepository,
-    private val preferences: AppPreferences
+    private val preferences: AppPreferences,
+    private val onLoginRequired: () -> Unit
 ) {
     suspend fun createWork(request: CreateWorkRequest): AppResult<CreateWorkResponse> {
         return authorizedCall { safeApiCall { apiService.createWork(request) } }
@@ -32,6 +33,9 @@ class WorksRepository(
         val auth = authRepository.ensureGuestToken()
         if (auth is AppResult.Failure) return auth
         val firstTry = block()
+        if (firstTry is AppResult.Failure && (firstTry.error is AppError.LoginRequired || firstTry.error is AppError.Unauthorized)) {
+            onLoginRequired()
+        }
         if (firstTry is AppResult.Failure && firstTry.error is AppError.Unauthorized) {
             authRepository.clearToken()
             val refresh = authRepository.ensureGuestToken()

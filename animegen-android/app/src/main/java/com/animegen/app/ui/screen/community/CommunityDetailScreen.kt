@@ -1,4 +1,4 @@
-package com.animegen.app.ui.screen.community
+﻿package com.animegen.app.ui.screen.community
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -16,6 +17,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.animegen.app.AppContainer
+import com.animegen.app.R
 import com.animegen.app.data.network.CommunityComment
 import com.animegen.app.data.network.CommunityContentDetail
 import com.animegen.app.data.repo.AppResult
@@ -60,7 +62,7 @@ class CommunityDetailViewModel(
                 val message = when {
                     detail is AppResult.Failure -> detail.error.displayMessage
                     comments is AppResult.Failure -> comments.error.displayMessage
-                    else -> "load failed"
+                    else -> "加载失败"
                 }
                 _uiState.update { it.copy(loading = false, errorMessage = message) }
             }
@@ -168,9 +170,10 @@ fun CommunityDetailRoute(container: AppContainer, contentIdArg: String?) {
         CommunityDetailViewModel(container.communityRepository)
     })
     val state by vm.uiState.collectAsState()
+    val sessionState by container.sessionStateFlow.collectAsState()
     val contentId = contentIdArg?.toLongOrNull()
 
-    LaunchedEffect(contentId) { if (contentId != null) vm.load(contentId) }
+    LaunchedEffect(contentId, sessionState) { if (contentId != null) vm.load(contentId) }
 
     CommunityDetailScreen(
         state = state,
@@ -198,23 +201,23 @@ private fun CommunityDetailScreen(
         }
         val content = state.content ?: return
         Text(content.title, style = MaterialTheme.typography.titleLarge)
-        Text("by ${content.author.nickname}")
+        Text(stringResource(R.string.community_author_format, content.author.nickname))
         if (!content.mediaUrl.isNullOrBlank()) {
             VideoPlayer(url = content.mediaUrl)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = onLike) { Text(if (content.viewerState.liked) "Liked ${content.likeCount}" else "Like ${content.likeCount}") }
-            Button(onClick = onFavorite) { Text(if (content.viewerState.favorited) "Favorited ${content.favoriteCount}" else "Favorite ${content.favoriteCount}") }
-            Text("Comments ${content.commentCount}", modifier = Modifier.padding(top = 10.dp))
+            Button(onClick = onLike) { Text(if (content.viewerState.liked) stringResource(R.string.community_detail_like_on, content.likeCount) else stringResource(R.string.community_detail_like_off, content.likeCount)) }
+            Button(onClick = onFavorite) { Text(if (content.viewerState.favorited) stringResource(R.string.community_detail_favorite_on, content.favoriteCount) else stringResource(R.string.community_detail_favorite_off, content.favoriteCount)) }
+            Text(stringResource(R.string.community_detail_comments_format, content.commentCount), modifier = Modifier.padding(top = 10.dp))
         }
         OutlinedTextField(
             value = state.commentInput,
             onValueChange = onCommentChange,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Write a comment") }
+            label = { Text(stringResource(R.string.community_detail_comment_label)) }
         )
         Button(onClick = onSendComment, enabled = !state.submittingComment) {
-            Text(if (state.submittingComment) "Sending..." else "Send")
+            Text(if (state.submittingComment) stringResource(R.string.community_detail_comment_sending) else stringResource(R.string.community_detail_comment_send))
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.comments, key = { it.commentId }) { comment ->
@@ -247,3 +250,6 @@ private fun VideoPlayer(url: String) {
         modifier = Modifier.fillMaxWidth().height(220.dp)
     )
 }
+
+
+

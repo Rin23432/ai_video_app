@@ -40,7 +40,7 @@ class TaskViewModel(
             val taskId = taskIdArg ?: lastTaskId
             val workId = workIdArg ?: lastWorkId
             _uiState.update { it.copy(taskId = taskId, workId = workId, initializing = false) }
-            if (taskId != null) startPolling() else _uiState.update { it.copy(errorMessage = "暂无任务，请先在 Create 发起任务") }
+            if (taskId != null) startPolling() else _uiState.update { it.copy(errorMessage = "暂无任务，请先在创作页发起任务") }
         }
     }
 
@@ -111,4 +111,5 @@ class TaskViewModel(
         super.onCleared()
     }
 }
+
 

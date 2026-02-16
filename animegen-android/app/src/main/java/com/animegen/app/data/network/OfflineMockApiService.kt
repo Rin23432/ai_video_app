@@ -23,11 +23,68 @@ class OfflineMockApiService : ApiService {
     private val comments = ConcurrentHashMap<Long, MutableList<CommunityComment>>()
     private val likes = ConcurrentHashMap<Long, Boolean>()
     private val favorites = ConcurrentHashMap<Long, Boolean>()
+    private var currentMe = MeProfile(
+        userId = 1001,
+        username = "offline_user",
+        nickname = "Offline User",
+        avatarUrl = null,
+        bio = "offline profile",
+        role = "GUEST",
+        stats = UserStats(0, 0, 0)
+    )
+    private val tags = listOf(
+        CommunityTag(1, "奇幻", 18, 80),
+        CommunityTag(2, "校园", 12, 66),
+        CommunityTag(3, "热血", 9, 55),
+        CommunityTag(4, "搞笑", 7, 41),
+        CommunityTag(5, "悬疑", 6, 37)
+    )
 
     override suspend fun guestToken(request: GuestTokenRequest): ApiResponse<GuestTokenResponse> {
         val userId = nextUserId.incrementAndGet()
         val token = "offline-token-${request.deviceId.ifBlank { "device" }}"
-        return ApiResponse(code = 0, message = "ok", data = GuestTokenResponse(token = token, userId = userId))
+        val user = AuthUserInfo(userId = userId, nickname = "Guest-$userId", role = "GUEST", avatarUrl = null)
+        currentMe = currentMe.copy(userId = userId, username = null, nickname = user.nickname, role = "GUEST")
+        return ApiResponse(code = 0, message = "ok", data = GuestTokenResponse(token = token, user = user))
+    }
+
+    override suspend fun login(request: LoginRequest): ApiResponse<AuthTokenResponse> {
+        val user = AuthUserInfo(userId = 2001, nickname = request.username, role = "USER", avatarUrl = null)
+        currentMe = currentMe.copy(
+            userId = user.userId,
+            username = request.username,
+            nickname = request.username,
+            role = "USER"
+        )
+        return ApiResponse(code = 0, message = "ok", data = AuthTokenResponse(token = "offline-login-token", user = user))
+    }
+
+    override suspend fun register(request: RegisterRequest): ApiResponse<AuthTokenResponse> {
+        val userId = nextUserId.incrementAndGet()
+        val user = AuthUserInfo(userId = userId, nickname = request.nickname, role = "USER", avatarUrl = null)
+        currentMe = currentMe.copy(
+            userId = userId,
+            username = request.username,
+            nickname = request.nickname,
+            role = "USER"
+        )
+        return ApiResponse(code = 0, message = "ok", data = AuthTokenResponse(token = "offline-register-token-$userId", user = user))
+    }
+
+    override suspend fun me(): ApiResponse<MeProfile> {
+        val published = contents.values.count { it.author.userId == currentMe.userId }
+        val favoritesCount = favorites.values.count { it }
+        val likesReceived = contents.values.filter { it.author.userId == currentMe.userId }.sumOf { it.likeCount }
+        return ApiResponse(
+            code = 0,
+            message = "ok",
+            data = currentMe.copy(stats = UserStats(published, favoritesCount, likesReceived))
+        )
+    }
+
+    override suspend fun updateProfile(request: UpdateProfileRequest): ApiResponse<MeProfile> {
+        currentMe = currentMe.copy(nickname = request.nickname, bio = request.bio, avatarUrl = request.avatarUrl)
+        return ApiResponse(code = 0, message = "ok", data = currentMe)
     }
 
     override suspend fun createWork(request: CreateWorkRequest): ApiResponse<CreateWorkResponse> {
@@ -106,6 +163,7 @@ class OfflineMockApiService : ApiService {
     }
 
     override suspend fun publishCommunity(request: CommunityPublishRequest): ApiResponse<CommunityPublishResponse> {
+        if (isGuest()) return ApiResponse(40100, "login required", null)
         val work = works[request.workId]
             ?: return ApiResponse(code = 404, message = "work not found", data = null)
         val id = nextContentId.incrementAndGet()
@@ -158,7 +216,27 @@ class OfflineMockApiService : ApiService {
         return ApiResponse(0, "ok", data)
     }
 
+    override suspend fun hotTags(limit: Int): ApiResponse<CommunityTagListResponse> {
+        return ApiResponse(0, "ok", CommunityTagListResponse(tags.take(limit.coerceAtLeast(1))))
+    }
+
+    override suspend fun searchTags(keyword: String, limit: Int): ApiResponse<CommunityTagListResponse> {
+        val q = keyword.trim()
+        val rows = if (q.isBlank()) emptyList() else tags.filter { it.name.contains(q, ignoreCase = true) }
+        return ApiResponse(0, "ok", CommunityTagListResponse(rows.take(limit.coerceAtLeast(1))))
+    }
+
+    override suspend fun getTagDetail(tagId: Long): ApiResponse<CommunityTagDetail> {
+        val tag = tags.firstOrNull { it.tagId == tagId } ?: return ApiResponse(404, "tag not found", null)
+        return ApiResponse(0, "ok", CommunityTagDetail(tag.tagId, tag.name, "offline tag", tag.contentCount, tag.hotScore))
+    }
+
+    override suspend fun listTagContents(tagId: Long, tab: String, cursor: Long, limit: Int): ApiResponse<CommunityFeedResponse> {
+        return listCommunityContents(tab, cursor, limit)
+    }
+
     override suspend fun toggleLike(contentId: Long, request: CommunityToggleRequest): ApiResponse<CommunityToggleResponse> {
+        if (isGuest()) return ApiResponse(40100, "login required", null)
         val old = contents[contentId] ?: return ApiResponse(404, "content not found", null)
         val liked = !(likes[contentId] ?: false)
         likes[contentId] = liked
@@ -171,6 +249,7 @@ class OfflineMockApiService : ApiService {
     }
 
     override suspend fun toggleFavorite(contentId: Long, request: CommunityToggleRequest): ApiResponse<CommunityToggleResponse> {
+        if (isGuest()) return ApiResponse(40100, "login required", null)
         val old = contents[contentId] ?: return ApiResponse(404, "content not found", null)
         val favorited = !(favorites[contentId] ?: false)
         favorites[contentId] = favorited
@@ -189,6 +268,7 @@ class OfflineMockApiService : ApiService {
     }
 
     override suspend fun createComment(contentId: Long, request: CommunityCreateCommentRequest): ApiResponse<CommunityCreateCommentResponse> {
+        if (isGuest()) return ApiResponse(40100, "login required", null)
         val old = contents[contentId] ?: return ApiResponse(404, "content not found", null)
         val list = comments.getOrPut(contentId) { mutableListOf() }
         val comment = CommunityComment(
@@ -208,23 +288,31 @@ class OfflineMockApiService : ApiService {
     }
 
     override suspend fun myFavorites(cursor: Long, limit: Int): ApiResponse<CommunityFeedResponse> {
+        if (isGuest()) return ApiResponse(40100, "login required", null)
         return listCommunityContents("hot", cursor, limit)
     }
 
     override suspend fun myPublished(cursor: Long, limit: Int): ApiResponse<CommunityFeedResponse> {
+        if (isGuest()) return ApiResponse(40100, "login required", null)
         return listCommunityContents("latest", cursor, limit)
     }
 
     override suspend fun hideContent(contentId: Long): ApiResponse<Boolean> {
+        if (isGuest()) return ApiResponse(40100, "login required", null)
         contents.remove(contentId)
         return ApiResponse(0, "ok", true)
     }
 
     override suspend fun deleteContent(contentId: Long): ApiResponse<Boolean> {
+        if (isGuest()) return ApiResponse(40100, "login required", null)
         contents.remove(contentId)
         comments.remove(contentId)
         likes.remove(contentId)
         favorites.remove(contentId)
         return ApiResponse(0, "ok", true)
+    }
+
+    private fun isGuest(): Boolean {
+        return currentMe.role.equals("GUEST", ignoreCase = true)
     }
 }

@@ -2,6 +2,7 @@
 
 import com.animegen.app.data.repo.AppError
 import com.animegen.app.data.repo.AppResult
+import com.animegen.app.observability.Telemetry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -12,6 +13,7 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import kotlin.math.max
 
 class HostRewriteInterceptor(
     private val baseUrlProvider: () -> String
@@ -47,6 +49,40 @@ class AuthHeaderInterceptor(
     }
 }
 
+class MetricsInterceptor : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+        val request = chain.request()
+        val startNs = System.nanoTime()
+        return try {
+            val response = chain.proceed(request)
+            val durationMs = max(0L, (System.nanoTime() - startNs) / 1_000_000L)
+            Telemetry.event(
+                "api_call",
+                mapOf(
+                    "method" to request.method,
+                    "path" to request.url.encodedPath,
+                    "status" to response.code.toString(),
+                    "durationMs" to durationMs.toString()
+                )
+            )
+            response
+        } catch (ex: Exception) {
+            val durationMs = max(0L, (System.nanoTime() - startNs) / 1_000_000L)
+            Telemetry.event(
+                "api_call",
+                mapOf(
+                    "method" to request.method,
+                    "path" to request.url.encodedPath,
+                    "status" to "EX",
+                    "durationMs" to durationMs.toString(),
+                    "error" to (ex.javaClass.simpleName ?: "Exception")
+                )
+            )
+            throw ex
+        }
+    }
+}
+
 class NetworkClient(
     baseUrlProvider: () -> String,
     tokenProvider: () -> String?
@@ -58,6 +94,7 @@ class NetworkClient(
         val okHttp = OkHttpClient.Builder()
             .addInterceptor(HostRewriteInterceptor(baseUrlProvider))
             .addInterceptor(AuthHeaderInterceptor(tokenProvider))
+            .addInterceptor(MetricsInterceptor())
             .addInterceptor(logging)
             .build()
 
@@ -76,6 +113,8 @@ suspend fun <T> safeApiCall(call: suspend () -> ApiResponse<T>): AppResult<T> {
             val response = call()
             if (response.code == 0 && response.data != null) {
                 AppResult.Success(response.data)
+            } else if (response.code == 40100) {
+                AppResult.Failure(AppError.LoginRequired(response.message.ifBlank { "请先登录后再操作" }))
             } else {
                 AppResult.Failure(AppError.Business(response.code, response.message.ifBlank { "业务请求失败" }))
             }

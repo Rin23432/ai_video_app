@@ -5,11 +5,24 @@ import retrofit2.http.GET
 import retrofit2.http.DELETE
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
 interface ApiService {
     @POST("/api/v1/auth/guest")
     suspend fun guestToken(@Body request: GuestTokenRequest): ApiResponse<GuestTokenResponse>
+
+    @POST("/api/v1/auth/login")
+    suspend fun login(@Body request: LoginRequest): ApiResponse<AuthTokenResponse>
+
+    @POST("/api/v1/auth/register")
+    suspend fun register(@Body request: RegisterRequest): ApiResponse<AuthTokenResponse>
+
+    @GET("/api/v1/me")
+    suspend fun me(): ApiResponse<MeProfile>
+
+    @PUT("/api/v1/me/profile")
+    suspend fun updateProfile(@Body request: UpdateProfileRequest): ApiResponse<MeProfile>
 
     @POST("/api/v1/works")
     suspend fun createWork(@Body request: CreateWorkRequest): ApiResponse<CreateWorkResponse>
@@ -38,6 +51,28 @@ interface ApiService {
 
     @GET("/api/v1/community/contents/{contentId}")
     suspend fun getCommunityDetail(@Path("contentId") contentId: Long): ApiResponse<CommunityContentDetail>
+
+    @GET("/api/v1/community/tags/hot")
+    suspend fun hotTags(
+        @Query("limit") limit: Int = 20
+    ): ApiResponse<CommunityTagListResponse>
+
+    @GET("/api/v1/community/tags/search")
+    suspend fun searchTags(
+        @Query("keyword") keyword: String,
+        @Query("limit") limit: Int = 20
+    ): ApiResponse<CommunityTagListResponse>
+
+    @GET("/api/v1/community/tags/{tagId}")
+    suspend fun getTagDetail(@Path("tagId") tagId: Long): ApiResponse<CommunityTagDetail>
+
+    @GET("/api/v1/community/tags/{tagId}/contents")
+    suspend fun listTagContents(
+        @Path("tagId") tagId: Long,
+        @Query("tab") tab: String,
+        @Query("cursor") cursor: Long = 0,
+        @Query("limit") limit: Int = 20
+    ): ApiResponse<CommunityFeedResponse>
 
     @POST("/api/v1/community/contents/{contentId}/like")
     suspend fun toggleLike(

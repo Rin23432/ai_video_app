@@ -73,6 +73,8 @@ public class TaskWorker {
 
             AiProvider.VideoRequest request = new AiProvider.VideoRequest();
             request.setPrompt(String.valueOf(data.get("prompt")));
+            request.setModelId(String.valueOf(data.getOrDefault("modelId", "")));
+            request.setApiKey(String.valueOf(data.getOrDefault("apiKey", "")));
             request.setStyleId(String.valueOf(data.get("styleId")));
             request.setAspectRatio(String.valueOf(data.get("aspectRatio")));
             request.setDurationSec(Integer.valueOf(String.valueOf(data.get("durationSec"))));
@@ -120,7 +122,7 @@ public class TaskWorker {
                 log.error("task fail taskId={}, retries={}, msg={}", taskId, currentRetry, message);
             }
         } catch (Exception ignored) {
-            log.error("handleFail failed payload={}", payload, ignored);
+            log.error("handleFail failed", ignored);
         } finally {
             MDC.remove("traceId");
         }

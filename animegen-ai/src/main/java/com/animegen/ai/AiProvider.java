@@ -5,12 +5,18 @@ public interface AiProvider {
 
     class VideoRequest {
         private String prompt;
+        private String modelId;
+        private String apiKey;
         private String styleId;
         private String aspectRatio;
         private Integer durationSec;
 
         public String getPrompt() { return prompt; }
         public void setPrompt(String prompt) { this.prompt = prompt; }
+        public String getModelId() { return modelId; }
+        public void setModelId(String modelId) { this.modelId = modelId; }
+        public String getApiKey() { return apiKey; }
+        public void setApiKey(String apiKey) { this.apiKey = apiKey; }
         public String getStyleId() { return styleId; }
         public void setStyleId(String styleId) { this.styleId = styleId; }
         public String getAspectRatio() { return aspectRatio; }

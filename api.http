@@ -1,142 +1,121 @@
 @host = http://localhost:8080
-@tokenA = REPLACE_USER_A_TOKEN
-@tokenB = REPLACE_USER_B_TOKEN
-@workId = 10001
-@contentId = 30001
-@commentId = 90001
+@guestDeviceId = android-device-001
+@guestToken = REPLACE_GUEST_TOKEN
+@userToken = REPLACE_USER_TOKEN
+@contentId = REPLACE_CONTENT_ID
 
-### 1. guest token A
+### 01. Guest login: issue token by deviceId
 POST {{host}}/api/v1/auth/guest
 Content-Type: application/json
 
 {
-  "deviceId": "community-device-a"
+  "deviceId": "{{guestDeviceId}}"
 }
 
-### 2. guest token B
-POST {{host}}/api/v1/auth/guest
+### 02. Guest get me profile
+GET {{host}}/api/v1/me
+Authorization: Bearer {{guestToken}}
+
+### 03. Guest update profile (allowed)
+PUT {{host}}/api/v1/me/profile
+Authorization: Bearer {{guestToken}}
 Content-Type: application/json
 
 {
-  "deviceId": "community-device-b"
+  "nickname": "Guest-A",
+  "bio": "just browsing",
+  "avatarUrl": "https://example.com/avatar/guest-a.png"
 }
 
-### 3. publish content
+### 04. Guest like community content -> expect 40100
+POST {{host}}/api/v1/community/contents/{{contentId}}/like
+Authorization: Bearer {{guestToken}}
+Content-Type: application/json
+
+{
+  "action": "TOGGLE"
+}
+
+### 05. Register user (optional endpoint)
+POST {{host}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "demo_user_01",
+  "password": "123456",
+  "nickname": "Demo 01"
+}
+
+### 06. User login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "demo_user_01",
+  "password": "123456"
+}
+
+### 07. User get me profile
+GET {{host}}/api/v1/me
+Authorization: Bearer {{userToken}}
+
+### 08. User update profile
+PUT {{host}}/api/v1/me/profile
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "nickname": "Demo Updated",
+  "bio": "I like anime",
+  "avatarUrl": "https://example.com/avatar/demo.png"
+}
+
+### 09. User publish content (requires READY work in DB, e.g. workId=10001)
 POST {{host}}/api/v1/community/contents
-Authorization: Bearer {{tokenA}}
+Authorization: Bearer {{userToken}}
 Content-Type: application/json
 
 {
-  "workId": {{workId}},
-  "title": "第一话：雨夜相遇",
-  "description": "测试发布到社区"
+  "workId": 10001,
+  "title": "My First Publish",
+  "description": "for auth-link acceptance",
+  "tagIds": [1, 2]
 }
 
-### 4. publish duplicate work (expect 4091)
-POST {{host}}/api/v1/community/contents
-Authorization: Bearer {{tokenA}}
-Content-Type: application/json
-
-{
-  "workId": {{workId}},
-  "title": "重复发布",
-  "description": "应返回重复发布错误"
-}
-
-### 5. feed latest
-GET {{host}}/api/v1/community/contents?tab=latest&cursor=0&limit=20
-Authorization: Bearer {{tokenA}}
-
-### 6. feed hot
-GET {{host}}/api/v1/community/contents?tab=hot&cursor=0&limit=20
-Authorization: Bearer {{tokenA}}
-
-### 7. content detail
+### 10. Detail with viewerState before interaction (liked=false,favorited=false)
 GET {{host}}/api/v1/community/contents/{{contentId}}
-Authorization: Bearer {{tokenA}}
+Authorization: Bearer {{userToken}}
 
-### 8. like toggle on
+### 11. User toggle like
 POST {{host}}/api/v1/community/contents/{{contentId}}/like
-Authorization: Bearer {{tokenA}}
+Authorization: Bearer {{userToken}}
 Content-Type: application/json
 
 {
   "action": "TOGGLE"
 }
 
-### 9. like toggle off
-POST {{host}}/api/v1/community/contents/{{contentId}}/like
-Authorization: Bearer {{tokenA}}
-Content-Type: application/json
+### 12. Detail after like (viewerState.liked should be true)
+GET {{host}}/api/v1/community/contents/{{contentId}}
+Authorization: Bearer {{userToken}}
 
-{
-  "action": "TOGGLE"
-}
-
-### 10. favorite toggle on
+### 13. User toggle favorite
 POST {{host}}/api/v1/community/contents/{{contentId}}/favorite
-Authorization: Bearer {{tokenA}}
+Authorization: Bearer {{userToken}}
 Content-Type: application/json
 
 {
   "action": "TOGGLE"
 }
 
-### 11. favorite toggle off
-POST {{host}}/api/v1/community/contents/{{contentId}}/favorite
-Authorization: Bearer {{tokenA}}
-Content-Type: application/json
+### 14. Detail after favorite (viewerState.favorited should be true)
+GET {{host}}/api/v1/community/contents/{{contentId}}
+Authorization: Bearer {{userToken}}
 
-{
-  "action": "TOGGLE"
-}
-
-### 12. list comments
-GET {{host}}/api/v1/community/contents/{{contentId}}/comments?cursor=0&limit=20
-Authorization: Bearer {{tokenA}}
-
-### 13. create comment
+### 15. Missing token create comment -> expect 40100
 POST {{host}}/api/v1/community/contents/{{contentId}}/comments
-Authorization: Bearer {{tokenA}}
 Content-Type: application/json
 
 {
-  "text": "这个剧情很有意思！"
-}
-
-### 14. create sensitive comment (expect 4510)
-POST {{host}}/api/v1/community/contents/{{contentId}}/comments
-Authorization: Bearer {{tokenA}}
-Content-Type: application/json
-
-{
-  "text": "包含敏感词 fuck"
-}
-
-### 15. delete comment (author/comment owner)
-DELETE {{host}}/api/v1/community/comments/{{commentId}}
-Authorization: Bearer {{tokenA}}
-
-### 16. my favorites
-GET {{host}}/api/v1/community/me/favorites?cursor=0&limit=20
-Authorization: Bearer {{tokenA}}
-
-### 17. my published
-GET {{host}}/api/v1/community/me/contents?cursor=0&limit=20
-Authorization: Bearer {{tokenA}}
-
-### 18. hide content
-POST {{host}}/api/v1/community/contents/{{contentId}}/hide
-Authorization: Bearer {{tokenA}}
-
-### 19. delete content
-DELETE {{host}}/api/v1/community/contents/{{contentId}}
-Authorization: Bearer {{tokenA}}
-
-### 20. unauthorized like (expect 4010)
-POST {{host}}/api/v1/community/contents/{{contentId}}/like
-Content-Type: application/json
-
-{
-  "action": "TOGGLE"
+  "text": "need login"
 }

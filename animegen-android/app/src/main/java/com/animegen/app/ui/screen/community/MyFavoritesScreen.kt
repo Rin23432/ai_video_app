@@ -1,4 +1,4 @@
-package com.animegen.app.ui.screen.community
+﻿package com.animegen.app.ui.screen.community
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,11 +8,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.animegen.app.AppContainer
+import com.animegen.app.R
 import com.animegen.app.data.network.CommunityContentSummary
 import com.animegen.app.data.repo.AppResult
 import com.animegen.app.data.repo.CommunityRepository
@@ -52,9 +54,10 @@ fun MyFavoritesRoute(container: AppContainer, onOpenDetail: (Long) -> Unit) {
     LaunchedEffect(Unit) { vm.load() }
 
     Column(modifier = Modifier.fillMaxSize().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("My Favorites")
+        Text(stringResource(R.string.my_favorites_title))
         if (state.loading) CircularProgressIndicator()
-        if (state.errorMessage != null) ErrorNotice(message = state.errorMessage, onRetry = vm::load)
+        val errorMessage = state.errorMessage
+        if (errorMessage != null) ErrorNotice(message = errorMessage, onRetry = vm::load)
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.items, key = { it.contentId }) {
                 Text("${it.title} (${it.favoriteCount})", modifier = Modifier.fillMaxWidth().clickable { onOpenDetail(it.contentId) }.padding(6.dp))
@@ -62,3 +65,7 @@ fun MyFavoritesRoute(container: AppContainer, onOpenDetail: (Long) -> Unit) {
         }
     }
 }
+
+
+
+

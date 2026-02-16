@@ -1,6 +1,7 @@
 ﻿# AnimeGen Android (Kotlin + Compose)
 
-基于当前后端 API（`/api/v1/auth/guest`, `/api/v1/works`, `/api/v1/tasks/{id}`, `/api/v1/works/{id}`）的 Android 客户端。
+基于当前后端 API 的 Android 客户端，已覆盖登录与个人主页联动：
+`/api/v1/auth/guest`、`/api/v1/auth/login`、`/api/v1/auth/register`、`/api/v1/me`、`/api/v1/me/profile`。
 
 ## 技术栈
 - Kotlin + Jetpack Compose
@@ -13,6 +14,9 @@
 - `Task`: 每 1.5s 轮询 `GET /api/v1/tasks/{id}`，成功后跳 `WorkDetail`
 - `Works`: 拉取作品列表，展示封面 + 标题 + 状态
 - `WorkDetail`: 拉取作品详情并用 Media3 播放 `videoUrl`
+- `Login`: 用户名密码登录 + 注册
+- `Me`: 展示昵称/简介/统计 + 我的发布/我的收藏入口
+- `Profile`: 修改昵称/bio/avatarUrl
 - `Settings`: 配置 `baseUrl`、`deviceId`
 
 ## 全局错误处理
@@ -22,6 +26,11 @@
 - `5xx`（服务端异常）
 - 业务错误（`ApiResponse.code != 0`）
 - 任务失败（`status=FAIL`）
+
+额外联动：
+- OkHttp 自动注入 `Authorization: Bearer <token>`
+- `ApiResponse.code=40100` 或 HTTP `401` 时触发全局事件，自动跳转 `Login`
+- 登录成功后自动刷新 `Me` 页面与社区详情 `viewerState`
 
 ## 配置 baseUrl
 有两种方式：
@@ -55,9 +64,10 @@ API_BASE_URL=mock://offline
 1. 启动后端服务（确保 `api.http` 中接口可用）
 2. 可选导入最小 mock 数据：执行 `sql/mock-data.sql`
 3. 打开 App `Settings`，将 `baseUrl` 改为真实后端地址
-4. 在 `Create` 输入标题和 prompt，点击 `POST /works`
-5. 自动进入 `Task` 轮询，成功后自动跳 `WorkDetail`
-6. 进入 `Works` 校验列表展示
+4. 打开 `Me` 页确认已自动 guest 登录（可看到 role=GUEST）
+5. 在社区详情执行点赞/收藏，触发 40100 后应自动跳转 `Login`
+6. 使用注册/登录完成认证后返回，验证 `Me` 与详情 `viewerState` 刷新
+7. 进入 `Profile` 修改资料并保存，返回 `Me` 验证变更
 
 说明：
 - `Create` 请求会携带并复用 `requestId`，重试可命中后端幂等。
