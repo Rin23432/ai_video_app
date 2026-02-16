@@ -11,3 +11,8 @@
 # (可选) Android/Java 常见垃圾
 *.log
 *.tmp
+
+# crash/memory dumps
+*.hprof
+java_pid*.hprof
+*.log
