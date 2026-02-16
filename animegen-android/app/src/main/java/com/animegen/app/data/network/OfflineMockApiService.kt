@@ -211,6 +211,38 @@ class OfflineMockApiService : ApiService {
         return ApiResponse(0, "ok", CommunityFeedResponse(items, cursor + items.size))
     }
 
+    override suspend fun searchCommunityContents(keyword: String, cursor: Long, limit: Int): ApiResponse<CommunityFeedResponse> {
+        val q = keyword.trim()
+        if (q.isBlank()) {
+            return ApiResponse(0, "ok", CommunityFeedResponse(emptyList(), 0))
+        }
+        val rows = contents.values
+            .filter {
+                it.title.contains(q, ignoreCase = true) || (it.description?.contains(q, ignoreCase = true) == true)
+            }
+            .sortedByDescending {
+                val exact = if (it.title.equals(q, ignoreCase = true)) 100 else 0
+                val prefix = if (it.title.startsWith(q, ignoreCase = true)) 80 else 0
+                val contains = if (it.title.contains(q, ignoreCase = true)) 60 else 0
+                val desc = if (it.description?.contains(q, ignoreCase = true) == true) 30 else 0
+                exact + prefix + contains + desc + it.likeCount * 2 + it.favoriteCount * 3 + it.commentCount * 5
+            }
+        val sliced = rows.drop(cursor.toInt().coerceAtLeast(0)).take(limit.coerceAtLeast(1))
+        val items = sliced.map {
+            CommunityContentSummary(
+                contentId = it.contentId,
+                title = it.title,
+                coverUrl = it.coverUrl,
+                author = it.author,
+                likeCount = it.likeCount,
+                favoriteCount = it.favoriteCount,
+                commentCount = it.commentCount,
+                publishTime = it.publishTime
+            )
+        }
+        return ApiResponse(0, "ok", CommunityFeedResponse(items, cursor + items.size))
+    }
+
     override suspend fun getCommunityDetail(contentId: Long): ApiResponse<CommunityContentDetail> {
         val data = contents[contentId] ?: return ApiResponse(404, "content not found", null)
         return ApiResponse(0, "ok", data)
@@ -229,6 +261,67 @@ class OfflineMockApiService : ApiService {
     override suspend fun getTagDetail(tagId: Long): ApiResponse<CommunityTagDetail> {
         val tag = tags.firstOrNull { it.tagId == tagId } ?: return ApiResponse(404, "tag not found", null)
         return ApiResponse(0, "ok", CommunityTagDetail(tag.tagId, tag.name, "offline tag", tag.contentCount, tag.hotScore))
+    }
+
+    override suspend fun contentRankings(window: String, cursor: Long, limit: Int): ApiResponse<CommunityRankingContentResponse> {
+        val rows = contents.values
+            .sortedByDescending { it.likeCount * 2 + it.favoriteCount * 3 + it.commentCount * 5 + 1 }
+            .drop(cursor.toInt().coerceAtLeast(0))
+            .take(limit.coerceAtLeast(1))
+        val items = rows.mapIndexed { index, row ->
+            val score = (row.likeCount * 2 + row.favoriteCount * 3 + row.commentCount * 5 + 1).toDouble()
+            CommunityRankingContentItem(
+                rank = cursor.toInt() + index + 1,
+                contentId = row.contentId,
+                title = row.title,
+                coverUrl = row.coverUrl,
+                author = row.author,
+                score = score,
+                deltaScore = 0.0
+            )
+        }
+        return ApiResponse(0, "ok", CommunityRankingContentResponse(window, items, cursor + items.size))
+    }
+
+    override suspend fun authorRankings(window: String, cursor: Long, limit: Int): ApiResponse<CommunityRankingAuthorResponse> {
+        val scoreMap = mutableMapOf<Long, Double>()
+        contents.values.forEach { c ->
+            val score = c.likeCount * 2 + c.favoriteCount * 3 + c.commentCount * 5 + 1
+            scoreMap[c.author.userId] = (scoreMap[c.author.userId] ?: 0.0) + score
+        }
+        val sorted = scoreMap.entries.sortedByDescending { it.value }
+            .drop(cursor.toInt().coerceAtLeast(0))
+            .take(limit.coerceAtLeast(1))
+        val items = sorted.mapIndexed { index, row ->
+            val author = contents.values.firstOrNull { it.author.userId == row.key }?.author
+                ?: CommunityAuthor(row.key, "user-${row.key}", null)
+            CommunityRankingAuthorItem(
+                rank = cursor.toInt() + index + 1,
+                author = author,
+                publishedCount = contents.values.count { it.author.userId == row.key },
+                likesReceived = contents.values.filter { it.author.userId == row.key }.sumOf { it.likeCount },
+                score = row.value,
+                deltaScore = 0.0
+            )
+        }
+        return ApiResponse(0, "ok", CommunityRankingAuthorResponse(window, items, cursor + items.size))
+    }
+
+    override suspend fun tagRankings(window: String, cursor: Long, limit: Int): ApiResponse<CommunityRankingTagResponse> {
+        val rows = tags.sortedByDescending { it.hotScore }
+            .drop(cursor.toInt().coerceAtLeast(0))
+            .take(limit.coerceAtLeast(1))
+        val items = rows.mapIndexed { index, tag ->
+            CommunityRankingTagItem(
+                rank = cursor.toInt() + index + 1,
+                tagId = tag.tagId,
+                name = tag.name,
+                contentCount = tag.contentCount,
+                score = tag.hotScore.toDouble(),
+                deltaScore = 0.0
+            )
+        }
+        return ApiResponse(0, "ok", CommunityRankingTagResponse(window, items, cursor + items.size))
     }
 
     override suspend fun listTagContents(tagId: Long, tab: String, cursor: Long, limit: Int): ApiResponse<CommunityFeedResponse> {

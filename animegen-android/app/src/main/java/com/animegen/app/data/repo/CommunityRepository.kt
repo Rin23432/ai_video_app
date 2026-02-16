@@ -41,6 +41,32 @@ class CommunityRepository(
         }.getOrElse { emptyList() }
     }
 
+    suspend fun searchContents(keyword: String, cursor: Long = 0, limit: Int = 20): AppResult<CommunityFeedResponse> {
+        val q = keyword.trim()
+        if (q.isBlank()) {
+            return AppResult.Success(CommunityFeedResponse(emptyList(), 0))
+        }
+        val key = "search:$q:$cursor:$limit"
+        return requestCoordinator.coalesce(key) {
+            authorizedCall { safeApiCall { apiService.searchCommunityContents(q, cursor, limit) } }
+        }.also { result ->
+            if (cursor == 0L && result is AppResult.Success) {
+                val json = gson.toJson(result.data.items)
+                preferences.setCommunitySearchCache(q, json)
+            }
+        }
+    }
+
+    suspend fun searchContentsCached(keyword: String): List<CommunityContentSummary> {
+        val q = keyword.trim()
+        if (q.isBlank()) return emptyList()
+        val (json, _) = preferences.getCommunitySearchCache(q)
+        if (json.isNullOrBlank()) return emptyList()
+        return runCatching {
+            gson.fromJson<List<CommunityContentSummary>>(json, summaryListType) ?: emptyList()
+        }.getOrElse { emptyList() }
+    }
+
     suspend fun detail(contentId: Long): AppResult<CommunityContentDetail> {
         return requestCoordinator.coalesce("detail:$contentId") {
             authorizedCall { safeApiCall { apiService.getCommunityDetail(contentId) } }
@@ -61,6 +87,18 @@ class CommunityRepository(
 
     suspend fun tagContents(tagId: Long, tab: String, cursor: Long = 0, limit: Int = 20): AppResult<CommunityFeedResponse> {
         return authorizedCall { safeApiCall { apiService.listTagContents(tagId, tab, cursor, limit) } }
+    }
+
+    suspend fun contentRankings(window: String, cursor: Long = 0, limit: Int = 20): AppResult<CommunityRankingContentResponse> {
+        return authorizedCall { safeApiCall { apiService.contentRankings(window, cursor, limit) } }
+    }
+
+    suspend fun authorRankings(window: String, cursor: Long = 0, limit: Int = 20): AppResult<CommunityRankingAuthorResponse> {
+        return authorizedCall { safeApiCall { apiService.authorRankings(window, cursor, limit) } }
+    }
+
+    suspend fun tagRankings(window: String, cursor: Long = 0, limit: Int = 20): AppResult<CommunityRankingTagResponse> {
+        return authorizedCall { safeApiCall { apiService.tagRankings(window, cursor, limit) } }
     }
 
     suspend fun toggleLike(contentId: Long): AppResult<CommunityToggleResponse> {

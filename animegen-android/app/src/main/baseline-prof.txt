@@ -1,0 +1,10 @@
+Lcom/animegen/app/MainActivity;
+Lcom/animegen/app/AnimeGenApp;
+Lcom/animegen/app/AppContainer;
+Lcom/animegen/app/ui/screen/community/CommunityPublishScreenKt;
+Lcom/animegen/app/ui/screen/community/CommunityPublishViewModel;
+Lcom/animegen/app/ui/screen/community/CommunityPublishUiState;
+Lcom/animegen/app/ai/LlamaCppTagSuggestEngine;
+Lcom/animegen/app/ai/TfliteTagSuggestEngine;
+Lcom/animegen/app/data/network/NetworkClient;
+Lcom/animegen/app/data/repo/CommunityRepository;

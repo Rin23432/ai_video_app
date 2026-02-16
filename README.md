@@ -1,4 +1,4 @@
-﻿# AnimeGen
+﻿# AnimeGen APP
 
 [![Java](https://img.shields.io/badge/Java-17-007396?logo=openjdk)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
@@ -6,7 +6,7 @@
 [![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis)](https://redis.io/)
 [![Android](https://img.shields.io/badge/Android-Compose-3DDC84?logo=android)](https://developer.android.com/jetpack/compose)
 
-AnimeGen 是一个 AI 漫剧生成 + 创作者社区原型项目，当前实现了可运行闭环：
+AnimeGen 是一个 AI 漫剧生成 + 创作者社区安卓app项目，当前实现了可运行闭环：
 `游客登录 -> 创建作品 -> 异步生成任务 -> 查询任务 -> 查看作品结果 -> 发布到社区(可选标签) -> 最新/热门/同好浏览 -> 标签详情流 -> 点赞/收藏/评论 -> 我的收藏/我的发布管理`。
 
 ## 目录
@@ -31,6 +31,7 @@ AnimeGen 是一个 AI 漫剧生成 + 创作者社区原型项目，当前实现�
 - 作品列表/详情/删除：`GET /api/v1/works`、`GET /api/v1/works/{id}`、`DELETE /api/v1/works/{id}`。
 - 社区发布：`POST /api/v1/community/contents`（work ready 后发布）。
 - 社区内容流：`GET /api/v1/community/contents?tab=latest|hot`。
+- 排行榜 API：`GET /api/v1/community/rankings/contents|authors|tags?window=daily|weekly|monthly`。
 - 标签系统：`tag/content_tag`，发布支持 `tagIds(0~5)`。
 - 同好标签 API：`GET /api/v1/community/tags/hot|search|{tagId}|{tagId}/contents`。
 - 社区详情：`GET /api/v1/community/contents/{contentId}`。
@@ -42,6 +43,7 @@ AnimeGen 是一个 AI 漫剧生成 + 创作者社区原型项目，当前实现�
 - AI 适配层：已接入 `MockAiProvider`（返回模拟 `coverUrl` / `videoUrl`）。
 - Android 客户端：社区支持 `最新/热门/同好` 三 Tab、TagHub 热门+搜索、TagDetail 最新/热门内容流、发布页选标签（最多5个）。
 - 质量保障：全局异常拦截、错误码体系、JSR-303 参数校验、`traceId` 日志、事务写入、幂等创建、点赞收藏幂等（唯一索引 + 事务计数）、敏感词过滤、Redis 热榜回退策略。
+- 榜单工程化：Outbox 事件表 + 定时 dispatcher + 榜单快照（`ranking_snapshot`）+ App 排行榜 Tab。
 
 ## 技术栈
 

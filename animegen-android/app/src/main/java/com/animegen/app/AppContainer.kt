@@ -27,6 +27,9 @@ import com.animegen.app.data.network.CommunityTagDetail
 import com.animegen.app.data.network.CommunityTagListResponse
 import com.animegen.app.data.network.CommunityToggleRequest
 import com.animegen.app.data.network.CommunityToggleResponse
+import com.animegen.app.data.network.CommunityRankingAuthorResponse
+import com.animegen.app.data.network.CommunityRankingContentResponse
+import com.animegen.app.data.network.CommunityRankingTagResponse
 import com.animegen.app.data.network.NetworkClient
 import com.animegen.app.data.network.OfflineMockApiService
 import com.animegen.app.data.network.RegisterRequest
@@ -126,6 +129,9 @@ class AppContainer(context: Context) {
         override suspend fun listCommunityContents(tab: String, cursor: Long, limit: Int): ApiResponse<CommunityFeedResponse> =
             activeService().listCommunityContents(tab, cursor, limit)
 
+        override suspend fun searchCommunityContents(keyword: String, cursor: Long, limit: Int): ApiResponse<CommunityFeedResponse> =
+            activeService().searchCommunityContents(keyword, cursor, limit)
+
         override suspend fun getCommunityDetail(contentId: Long): ApiResponse<CommunityContentDetail> =
             activeService().getCommunityDetail(contentId)
 
@@ -137,6 +143,15 @@ class AppContainer(context: Context) {
 
         override suspend fun getTagDetail(tagId: Long): ApiResponse<CommunityTagDetail> =
             activeService().getTagDetail(tagId)
+
+        override suspend fun contentRankings(window: String, cursor: Long, limit: Int): ApiResponse<CommunityRankingContentResponse> =
+            activeService().contentRankings(window, cursor, limit)
+
+        override suspend fun authorRankings(window: String, cursor: Long, limit: Int): ApiResponse<CommunityRankingAuthorResponse> =
+            activeService().authorRankings(window, cursor, limit)
+
+        override suspend fun tagRankings(window: String, cursor: Long, limit: Int): ApiResponse<CommunityRankingTagResponse> =
+            activeService().tagRankings(window, cursor, limit)
 
         override suspend fun listTagContents(tagId: Long, tab: String, cursor: Long, limit: Int): ApiResponse<CommunityFeedResponse> =
             activeService().listTagContents(tagId, tab, cursor, limit)

@@ -23,6 +23,7 @@
     <string name="community_feed_subtitle">分享你的动漫灵感，轻松交流</string>
     <string name="community_feed_title">社区</string>
     <string name="community_publish_desc_label">描述</string>
+    <string name="community_publish_local_suggest">本地推荐标签</string>
     <string name="community_publish_search">搜索</string>
     <string name="community_publish_search_result">搜索结果</string>
     <string name="community_publish_search_tag_label">搜索标签</string>
@@ -38,6 +39,7 @@
     <string name="community_stat_pill_format">%1$s %2$d</string>
     <string name="community_tab_hot">热门</string>
     <string name="community_tab_latest">最新</string>
+    <string name="community_tab_ranking">排行榜</string>
     <string name="community_tab_tags">标签</string>
     <string name="create_dismiss">关闭</string>
     <string name="create_field_api_key">接口密钥</string>
@@ -78,6 +80,15 @@
     <string name="profile_nickname_label">昵称</string>
     <string name="profile_save_button">保存</string>
     <string name="profile_title">个人资料</string>
+    <string name="ranking_author_meta">发布 %1$d | 获赞 %2$d | 分数 %3$.1f</string>
+    <string name="ranking_content_meta">作者 %1$s | 分数 %2$.1f | 变化 %3$.1f</string>
+    <string name="ranking_tag_meta">内容 %1$d | 分数 %2$.1f | 变化 %3$.1f</string>
+    <string name="ranking_type_author">创作者榜</string>
+    <string name="ranking_type_content">作品榜</string>
+    <string name="ranking_type_tag">标签榜</string>
+    <string name="ranking_window_daily">日榜</string>
+    <string name="ranking_window_monthly">月榜</string>
+    <string name="ranking_window_weekly">周榜</string>
     <string name="settings_base_url">服务地址（baseUrl）</string>
     <string name="settings_device_id">设备ID（deviceId）</string>
     <string name="settings_offline_hint">离线 mock 模式：将 baseUrl 设为 mock://offline</string>

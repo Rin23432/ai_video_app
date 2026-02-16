@@ -19,11 +19,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -42,17 +43,23 @@ import com.animegen.app.R
 import com.animegen.app.data.network.CommunityContentSummary
 import com.animegen.app.data.repo.AppResult
 import com.animegen.app.data.repo.CommunityRepository
+import com.animegen.app.observability.Telemetry
 import com.animegen.app.ui.common.ErrorNotice
 import com.animegen.app.ui.common.viewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 data class CommunityFeedUiState(
     val tab: String = "latest",
     val loading: Boolean = false,
+    val searchLoading: Boolean = false,
+    val searchKeyword: String = "",
+    val searchMode: Boolean = false,
     val items: List<CommunityContentSummary> = emptyList(),
     val showingCachedData: Boolean = false,
     val errorMessage: String? = null
@@ -63,18 +70,45 @@ class CommunityFeedViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CommunityFeedUiState())
     val uiState: StateFlow<CommunityFeedUiState> = _uiState.asStateFlow()
+    private var searchJob: Job? = null
 
     fun switchTab(tab: String) {
+        val query = _uiState.value.searchKeyword.trim()
+        if (query.isNotEmpty()) {
+            _uiState.update { it.copy(tab = tab) }
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                search(query)
+            }
+            return
+        }
         if (tab == "same") {
-            _uiState.update { it.copy(tab = tab, loading = false, showingCachedData = false, errorMessage = null) }
+            _uiState.update { it.copy(tab = tab, loading = false, searchLoading = false, showingCachedData = false, errorMessage = null) }
             return
         }
         load(tab)
     }
 
+    fun onSearchKeywordChanged(keyword: String) {
+        val q = keyword.trim()
+        _uiState.update { it.copy(searchKeyword = keyword, errorMessage = null) }
+        searchJob?.cancel()
+        if (q.isEmpty()) {
+            _uiState.update { it.copy(searchMode = false, searchLoading = false, showingCachedData = false) }
+            if (_uiState.value.tab != "same") {
+                load(_uiState.value.tab)
+            }
+            return
+        }
+        searchJob = viewModelScope.launch {
+            delay(350L)
+            search(q)
+        }
+    }
+
     private fun load(tab: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(loading = true, errorMessage = null, tab = tab) }
+            _uiState.update { it.copy(loading = true, searchMode = false, searchLoading = false, errorMessage = null, tab = tab) }
             val cached = repository.feedCached(tab)
             if (cached.isNotEmpty()) {
                 _uiState.update {
@@ -101,6 +135,48 @@ class CommunityFeedViewModel(
             }
         }
     }
+
+    private fun search(keyword: String) {
+        viewModelScope.launch {
+            val start = System.currentTimeMillis()
+            _uiState.update { it.copy(searchMode = true, searchLoading = true, loading = false, errorMessage = null) }
+            val cached = repository.searchContentsCached(keyword)
+            if (cached.isNotEmpty()) {
+                _uiState.update { it.copy(items = cached, showingCachedData = true) }
+            } else {
+                _uiState.update { it.copy(showingCachedData = false) }
+            }
+            when (val result = repository.searchContents(keyword = keyword)) {
+                is AppResult.Success -> {
+                    val latency = System.currentTimeMillis() - start
+                    Telemetry.event(
+                        name = "community_content_search",
+                        attrs = mapOf(
+                            "keyword_len" to keyword.length.toString(),
+                            "result_count" to result.data.items.size.toString(),
+                            "latency_ms" to latency.toString(),
+                            "cached_hit" to cached.isNotEmpty().toString()
+                        )
+                    )
+                    _uiState.update {
+                        it.copy(
+                            searchLoading = false,
+                            items = result.data.items,
+                            showingCachedData = false
+                        )
+                    }
+                }
+
+                is AppResult.Failure -> _uiState.update {
+                    it.copy(
+                        searchLoading = false,
+                        errorMessage = result.error.displayMessage,
+                        showingCachedData = cached.isNotEmpty()
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -114,7 +190,7 @@ fun CommunityFeedRoute(
     val vm: CommunityFeedViewModel = viewModel(factory = viewModelFactory {
         CommunityFeedViewModel(container.communityRepository)
     })
-    val state by vm.uiState.collectAsState()
+    val state by vm.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) { vm.switchTab("latest") }
 
@@ -136,6 +212,14 @@ fun CommunityFeedRoute(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        OutlinedTextField(
+            value = state.searchKeyword,
+            onValueChange = vm::onSearchKeywordChanged,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.community_search_label)) },
+            placeholder = { Text(stringResource(R.string.community_search_hint)) },
+            singleLine = true
+        )
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FeedTabChip(selected = state.tab == "latest", label = stringResource(R.string.community_tab_latest)) { vm.switchTab("latest") }
@@ -152,7 +236,7 @@ fun CommunityFeedRoute(
             }
         }
 
-        if (state.tab == "same") {
+        if (state.tab == "same" && !state.searchMode) {
             TagHubRoute(container = container, onOpenTag = onOpenTagDetail)
             return@Column
         }
@@ -170,13 +254,21 @@ fun CommunityFeedRoute(
             )
         }
 
-        if (state.loading) {
+        if (state.loading || state.searchLoading) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 CircularProgressIndicator()
             }
+        }
+
+        if (!state.loading && !state.searchLoading && state.items.isEmpty()) {
+            Text(
+                text = if (state.searchMode) stringResource(R.string.community_search_empty) else stringResource(R.string.community_feed_empty),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
         LazyColumn(

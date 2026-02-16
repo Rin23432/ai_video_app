@@ -110,6 +110,18 @@ public class CommunityService {
         return new CommunityContentFeedResponse(items, offset + items.size());
     }
 
+    public CommunityContentFeedResponse searchContents(String keyword, Long cursor, Integer limit) {
+        String q = keyword == null ? "" : keyword.trim();
+        if (q.isEmpty()) {
+            return new CommunityContentFeedResponse(Collections.emptyList(), 0L);
+        }
+        long offset = cursor == null ? 0L : Math.max(cursor, 0L);
+        int size = limit == null ? 20 : Math.max(1, Math.min(limit, 50));
+        List<ContentDO> rows = contentMapper.searchPublished(q, offset, size);
+        List<CommunityContentSummaryDTO> items = mapSummaryList(rows);
+        return new CommunityContentFeedResponse(items, offset + items.size());
+    }
+
     public CommunityTagListResponse listHotTags(Integer limit) {
         int size = limit == null ? 20 : Math.max(1, Math.min(limit, 50));
         LinkedHashMap<Long, TagDO> merged = new LinkedHashMap<>();

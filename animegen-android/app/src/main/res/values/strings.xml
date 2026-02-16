@@ -82,9 +82,14 @@
     <string name="community_feed_title">社区</string>
     <string name="community_feed_subtitle">分享你的动漫灵感，轻松交流</string>
     <string name="community_feed_cached_hint">当前展示缓存数据，正在尝试刷新。</string>
+    <string name="community_feed_empty">暂无内容，去发布第一条吧</string>
+    <string name="community_search_label">搜索内容</string>
+    <string name="community_search_hint">按标题或描述搜索作品</string>
+    <string name="community_search_empty">没有找到相关内容</string>
     <string name="community_tab_latest">最新</string>
     <string name="community_tab_hot">热门</string>
     <string name="community_tab_tags">标签</string>
+    <string name="community_tab_ranking">排行榜</string>
     <string name="community_favorites">收藏</string>
     <string name="community_published">发布</string>
     <string name="community_author_format">作者：%1$s</string>
@@ -122,6 +127,15 @@
     <string name="tag_hub_search_result">搜索结果</string>
     <string name="tag_meta_format">内容 %1$d | 热度 %2$d</string>
     <string name="tag_detail_stats_format">赞 %1$d | 收藏 %2$d | 评论 %3$d</string>
+    <string name="ranking_type_content">作品榜</string>
+    <string name="ranking_type_author">创作者榜</string>
+    <string name="ranking_type_tag">标签榜</string>
+    <string name="ranking_window_daily">日榜</string>
+    <string name="ranking_window_weekly">周榜</string>
+    <string name="ranking_window_monthly">月榜</string>
+    <string name="ranking_content_meta">作者 %1$s | 分数 %2$.1f | 变化 %3$.1f</string>
+    <string name="ranking_author_meta">发布 %1$d | 获赞 %2$d | 分数 %3$.1f</string>
+    <string name="ranking_tag_meta">内容 %1$d | 分数 %2$.1f | 变化 %3$.1f</string>
 </resources>
 
 

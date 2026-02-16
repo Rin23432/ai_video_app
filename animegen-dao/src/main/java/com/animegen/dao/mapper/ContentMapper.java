@@ -34,6 +34,22 @@ public interface ContentMapper {
             "ORDER BY hot_score DESC, publish_time DESC, id DESC LIMIT #{limit} OFFSET #{offset}")
     List<ContentDO> listPublishedByHot(@Param("offset") Long offset, @Param("limit") Integer limit);
 
+    @Select("SELECT c.* FROM content c " +
+            "WHERE c.status = 'PUBLISHED' " +
+            "AND (c.title LIKE CONCAT('%', #{keyword}, '%') OR c.description LIKE CONCAT('%', #{keyword}, '%')) " +
+            "ORDER BY " +
+            "CASE " +
+            "WHEN c.title = #{keyword} THEN 100 " +
+            "WHEN c.title LIKE CONCAT(#{keyword}, '%') THEN 80 " +
+            "WHEN c.title LIKE CONCAT('%', #{keyword}, '%') THEN 60 " +
+            "WHEN c.description LIKE CONCAT('%', #{keyword}, '%') THEN 30 " +
+            "ELSE 0 END DESC, " +
+            "c.hot_score DESC, c.publish_time DESC, c.id DESC " +
+            "LIMIT #{limit} OFFSET #{offset}")
+    List<ContentDO> searchPublished(@Param("keyword") String keyword,
+                                    @Param("offset") Long offset,
+                                    @Param("limit") Integer limit);
+
     @Select("SELECT c.* FROM content_tag ct JOIN content c ON c.id = ct.content_id " +
             "WHERE ct.tag_id = #{tagId} AND c.status = 'PUBLISHED' " +
             "ORDER BY c.publish_time DESC, c.id DESC LIMIT #{limit} OFFSET #{offset}")

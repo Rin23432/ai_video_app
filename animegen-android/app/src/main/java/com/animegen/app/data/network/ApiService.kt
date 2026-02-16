@@ -49,6 +49,13 @@ interface ApiService {
         @Query("limit") limit: Int = 20
     ): ApiResponse<CommunityFeedResponse>
 
+    @GET("/api/v1/community/contents/search")
+    suspend fun searchCommunityContents(
+        @Query("keyword") keyword: String,
+        @Query("cursor") cursor: Long = 0,
+        @Query("limit") limit: Int = 20
+    ): ApiResponse<CommunityFeedResponse>
+
     @GET("/api/v1/community/contents/{contentId}")
     suspend fun getCommunityDetail(@Path("contentId") contentId: Long): ApiResponse<CommunityContentDetail>
 
@@ -65,6 +72,27 @@ interface ApiService {
 
     @GET("/api/v1/community/tags/{tagId}")
     suspend fun getTagDetail(@Path("tagId") tagId: Long): ApiResponse<CommunityTagDetail>
+
+    @GET("/api/v1/community/rankings/contents")
+    suspend fun contentRankings(
+        @Query("window") window: String,
+        @Query("cursor") cursor: Long = 0,
+        @Query("limit") limit: Int = 20
+    ): ApiResponse<CommunityRankingContentResponse>
+
+    @GET("/api/v1/community/rankings/authors")
+    suspend fun authorRankings(
+        @Query("window") window: String,
+        @Query("cursor") cursor: Long = 0,
+        @Query("limit") limit: Int = 20
+    ): ApiResponse<CommunityRankingAuthorResponse>
+
+    @GET("/api/v1/community/rankings/tags")
+    suspend fun tagRankings(
+        @Query("window") window: String,
+        @Query("cursor") cursor: Long = 0,
+        @Query("limit") limit: Int = 20
+    ): ApiResponse<CommunityRankingTagResponse>
 
     @GET("/api/v1/community/tags/{tagId}/contents")
     suspend fun listTagContents(

@@ -1,54 +1,14 @@
 [
     {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-xxxhdpi_ic_launcher.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-xxxhdpi\\ic_launcher.webp"
-    },
-    {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-mdpi_ic_launcher_round.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-mdpi\\ic_launcher_round.webp"
-    },
-    {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-xxxhdpi_ic_launcher_round.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-xxxhdpi\\ic_launcher_round.webp"
-    },
-    {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-hdpi_ic_launcher.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-hdpi\\ic_launcher.webp"
-    },
-    {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-xhdpi_ic_launcher.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-xhdpi\\ic_launcher.webp"
-    },
-    {
-        "merged": "com.animegen.app-debug-74:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.animegen.app-main-76:/mipmap-anydpi-v26/ic_launcher_round.xml"
-    },
-    {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-mdpi_ic_launcher.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-mdpi\\ic_launcher.webp"
-    },
-    {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-hdpi_ic_launcher_round.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-hdpi\\ic_launcher_round.webp"
-    },
-    {
         "merged": "com.animegen.app-debug-74:/mipmap-anydpi-v26_ic_launcher.xml.flat",
         "source": "com.animegen.app-main-76:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-xxhdpi_ic_launcher_round.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-xxhdpi\\ic_launcher_round.webp"
+        "merged": "com.animegen.app-debug-74:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.animegen.app-main-76:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-xxhdpi_ic_launcher.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-xxhdpi\\ic_launcher.webp"
-    },
-    {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\drawable_ic_launcher_foreground.xml.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\drawable\\ic_launcher_foreground.xml"
-    },
-    {
-        "merged": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-debug-74:\\mipmap-xhdpi_ic_launcher_round.webp.flat",
-        "source": "C:\\Users\\rin\\scoop\\apps\\gradle\\current\\.gradle\\daemon\\8.13\\com.animegen.app-main-76:\\mipmap-xhdpi\\ic_launcher_round.webp"
+        "merged": "com.animegen.app-debug-74:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.animegen.app-main-76:/mipmap-anydpi-v26/ic_launcher_round.xml"
     }
 ]

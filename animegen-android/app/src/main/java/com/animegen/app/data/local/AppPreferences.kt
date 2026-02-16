@@ -25,6 +25,9 @@ class AppPreferences(private val context: Context, defaultBaseUrl: String) {
         val feedHotJson = stringPreferencesKey("feed_hot_json")
         val feedLatestUpdatedAt = longPreferencesKey("feed_latest_updated_at")
         val feedHotUpdatedAt = longPreferencesKey("feed_hot_updated_at")
+        val searchKeyword = stringPreferencesKey("community_search_keyword")
+        val searchResultJson = stringPreferencesKey("community_search_result_json")
+        val searchUpdatedAt = longPreferencesKey("community_search_updated_at")
     }
 
     val tokenFlow: Flow<String?> = context.dataStore.data.map { it[Keys.token] }
@@ -90,6 +93,23 @@ class AppPreferences(private val context: Context, defaultBaseUrl: String) {
         }
             .map { it.first to it.second }
             .first()
+    }
+
+    suspend fun setCommunitySearchCache(keyword: String, json: String, updatedAt: Long = System.currentTimeMillis()) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.searchKeyword] = keyword
+            prefs[Keys.searchResultJson] = json
+            prefs[Keys.searchUpdatedAt] = updatedAt
+        }
+    }
+
+    suspend fun getCommunitySearchCache(keyword: String): Pair<String?, Long?> {
+        val data = context.dataStore.data.first()
+        val cachedKeyword = data[Keys.searchKeyword]
+        if (!cachedKeyword.equals(keyword, ignoreCase = true)) {
+            return null to null
+        }
+        return data[Keys.searchResultJson] to data[Keys.searchUpdatedAt]
     }
 }
 

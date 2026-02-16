@@ -4033,6 +4033,7 @@ string community_feed_cached_hint
 string community_feed_subtitle
 string community_feed_title
 string community_publish_desc_label
+string community_publish_local_suggest
 string community_publish_search
 string community_publish_search_result
 string community_publish_search_tag_label
@@ -4048,6 +4049,7 @@ string community_stat_like
 string community_stat_pill_format
 string community_tab_hot
 string community_tab_latest
+string community_tab_ranking
 string community_tab_tags
 string create_dismiss
 string create_field_api_key
@@ -4319,6 +4321,15 @@ string profile_save_button
 string profile_title
 string range_end
 string range_start
+string ranking_author_meta
+string ranking_content_meta
+string ranking_tag_meta
+string ranking_type_author
+string ranking_type_content
+string ranking_type_tag
+string ranking_window_daily
+string ranking_window_monthly
+string ranking_window_weekly
 string search_menu_title
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description

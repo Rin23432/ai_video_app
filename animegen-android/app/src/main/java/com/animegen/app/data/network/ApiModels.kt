@@ -181,3 +181,49 @@ data class CommunityCreateCommentResponse(
     val commentCount: Int
 )
 
+data class CommunityRankingContentItem(
+    val rank: Int,
+    val contentId: Long,
+    val title: String,
+    val coverUrl: String?,
+    val author: CommunityAuthor,
+    val score: Double,
+    val deltaScore: Double
+)
+
+data class CommunityRankingContentResponse(
+    val window: String,
+    val items: List<CommunityRankingContentItem>,
+    val nextCursor: Long
+)
+
+data class CommunityRankingAuthorItem(
+    val rank: Int,
+    val author: CommunityAuthor,
+    val publishedCount: Int,
+    val likesReceived: Int,
+    val score: Double,
+    val deltaScore: Double
+)
+
+data class CommunityRankingAuthorResponse(
+    val window: String,
+    val items: List<CommunityRankingAuthorItem>,
+    val nextCursor: Long
+)
+
+data class CommunityRankingTagItem(
+    val rank: Int,
+    val tagId: Long,
+    val name: String,
+    val contentCount: Int,
+    val score: Double,
+    val deltaScore: Double
+)
+
+data class CommunityRankingTagResponse(
+    val window: String,
+    val items: List<CommunityRankingTagItem>,
+    val nextCursor: Long
+)
+

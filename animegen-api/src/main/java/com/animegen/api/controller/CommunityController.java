@@ -33,6 +33,14 @@ public class CommunityController {
         return ApiResponse.ok(communityService.listContents(tab, cursor, limit));
     }
 
+    @GetMapping("/contents/search")
+    public ApiResponse<CommunityContentFeedResponse> searchContents(
+            @RequestParam("keyword") String keyword,
+            @RequestParam(name = "cursor", defaultValue = "0") @Min(0) Long cursor,
+            @RequestParam(name = "limit", defaultValue = "20") @Min(1) @Max(50) Integer limit) {
+        return ApiResponse.ok(communityService.searchContents(keyword, cursor, limit));
+    }
+
     @GetMapping("/contents/{contentId}")
     public ApiResponse<CommunityContentDetailResponse> detail(@PathVariable("contentId") @Min(1) Long contentId) {
         return ApiResponse.ok(communityService.detail(AuthContext.getUserId(), contentId));
