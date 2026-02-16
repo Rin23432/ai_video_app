@@ -4,3 +4,10 @@
 .vscode/
 *.iml
 .docs
+# heap dump / memory snapshot
+*.hprof
+**/*.hprof
+
+# (可选) Android/Java 常见垃圾
+*.log
+*.tmp
