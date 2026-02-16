@@ -16,3 +16,7 @@
 *.hprof
 java_pid*.hprof
 *.log
+
+*.hprof
+java_pid*.hprof
+
