@@ -120,18 +120,6 @@ Content-Type: application/json
   "text": "need login"
 }
 
-### 16. Ranking contents (weekly)
-GET {{host}}/api/v1/community/rankings/contents?window=weekly&cursor=0&limit=20
-Authorization: Bearer {{userToken}}
-
-### 17. Ranking authors (weekly)
-GET {{host}}/api/v1/community/rankings/authors?window=weekly&cursor=0&limit=20
-Authorization: Bearer {{userToken}}
-
-### 18. Ranking tags (weekly)
-GET {{host}}/api/v1/community/rankings/tags?window=weekly&cursor=0&limit=20
-Authorization: Bearer {{userToken}}
-
-### 19. Community content search
-GET {{host}}/api/v1/community/contents/search?keyword=动漫&cursor=0&limit=20
+### 16. Community content search
+GET {{host}}/api/v1/community/contents/search?keyword=anime&cursor=0&limit=20
 Authorization: Bearer {{userToken}}
