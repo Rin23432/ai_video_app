@@ -17,6 +17,10 @@ public final class ErrorCodes {
     public static final int CONTENT_ALREADY_PUBLISHED = 4091;
     public static final int PERMISSION_DENIED = 4030;
     public static final int CONTENT_NOT_READY = 4092;
+    public static final int MALL_SKU_NOT_FOUND = 4404;
+    public static final int MALL_ORDER_NOT_FOUND = 4405;
+    public static final int MALL_STOCK_NOT_ENOUGH = 4409;
+    public static final int MALL_ORDER_STATUS_INVALID = 4410;
     public static final int SENSITIVE_WORD_HIT = 4510;
     public static final int ENQUEUE_FAILED = 5001;
     public static final int TASK_SUCCESS_WITHOUT_VIDEO = 5002;

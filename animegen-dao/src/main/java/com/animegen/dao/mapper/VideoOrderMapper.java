@@ -15,6 +15,9 @@ public interface VideoOrderMapper {
     @Select("SELECT * FROM video_order WHERE order_no = #{orderNo}")
     VideoOrderDO findByOrderNo(@Param("orderNo") String orderNo);
 
+    @Select("SELECT * FROM video_order WHERE user_id = #{userId} AND request_id = #{requestId} LIMIT 1")
+    VideoOrderDO findByUserAndRequestId(@Param("userId") Long userId, @Param("requestId") String requestId);
+
     @Select("SELECT * FROM video_order WHERE user_id = #{userId} " +
             "AND (#{status} IS NULL OR status = #{status}) " +
             "AND (#{cursor} = 0 OR id < #{cursor}) " +
@@ -23,4 +26,8 @@ public interface VideoOrderMapper {
                                   @Param("status") String status,
                                   @Param("cursor") Long cursor,
                                   @Param("limit") Integer limit);
+
+    @Update("UPDATE video_order SET status='PAID', paid_at=NOW(), updated_at=NOW() " +
+            "WHERE order_no=#{orderNo} AND status='PENDING_PAY'")
+    int markPaid(@Param("orderNo") String orderNo);
 }
