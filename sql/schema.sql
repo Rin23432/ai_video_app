@@ -181,3 +181,106 @@ CREATE TABLE IF NOT EXISTS ranking_snapshot (
     UNIQUE KEY uk_rank_snapshot(rank_type, window, biz_date, rank_no),
     INDEX idx_rank_entity(rank_type, window, biz_date, entity_id)
 );
+
+CREATE TABLE IF NOT EXISTS video_product_spu (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    creator_user_id BIGINT NOT NULL,
+    title VARCHAR(128) NOT NULL,
+    subtitle VARCHAR(255) DEFAULT NULL,
+    description TEXT,
+    cover_url VARCHAR(512) DEFAULT NULL,
+    category VARCHAR(64) DEFAULT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'DRAFT',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_video_spu_creator_status(creator_user_id, status),
+    INDEX idx_video_spu_status_updated(status, updated_at)
+);
+
+CREATE TABLE IF NOT EXISTS video_product_sku (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    spu_id BIGINT NOT NULL,
+    video_work_id BIGINT NOT NULL,
+    price_cent INT NOT NULL,
+    origin_price_cent INT DEFAULT NULL,
+    currency VARCHAR(8) NOT NULL DEFAULT 'CNY',
+    valid_days INT DEFAULT NULL,
+    stock_total INT NOT NULL DEFAULT 0,
+    stock_available INT NOT NULL DEFAULT 0,
+    stock_reserved INT NOT NULL DEFAULT 0,
+    status VARCHAR(32) NOT NULL DEFAULT 'ON_SALE',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_video_sku_spu_work(spu_id, video_work_id),
+    INDEX idx_video_sku_spu_status(spu_id, status),
+    INDEX idx_video_sku_status_updated(status, updated_at)
+);
+
+CREATE TABLE IF NOT EXISTS video_order (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    order_no VARCHAR(64) NOT NULL,
+    user_id BIGINT NOT NULL,
+    total_amount_cent INT NOT NULL,
+    pay_amount_cent INT NOT NULL,
+    currency VARCHAR(8) NOT NULL DEFAULT 'CNY',
+    status VARCHAR(32) NOT NULL,
+    pay_channel VARCHAR(32) DEFAULT NULL,
+    pay_deadline_at DATETIME DEFAULT NULL,
+    paid_at DATETIME DEFAULT NULL,
+    closed_at DATETIME DEFAULT NULL,
+    version INT NOT NULL DEFAULT 0,
+    request_id VARCHAR(64) DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_video_order_no(order_no),
+    UNIQUE KEY uk_video_order_user_request(user_id, request_id),
+    INDEX idx_video_order_user_created(user_id, created_at),
+    INDEX idx_video_order_status_created(status, created_at)
+);
+
+CREATE TABLE IF NOT EXISTS video_order_item (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    order_no VARCHAR(64) NOT NULL,
+    sku_id BIGINT NOT NULL,
+    spu_id BIGINT NOT NULL,
+    work_id BIGINT NOT NULL,
+    title_snapshot VARCHAR(128) NOT NULL,
+    cover_snapshot VARCHAR(512) DEFAULT NULL,
+    unit_price_cent INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    amount_cent INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_video_order_item_order_no(order_no),
+    INDEX idx_video_order_item_sku(sku_id)
+);
+
+CREATE TABLE IF NOT EXISTS video_payment (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    order_no VARCHAR(64) NOT NULL,
+    channel VARCHAR(32) NOT NULL,
+    channel_txn_no VARCHAR(128) DEFAULT NULL,
+    status VARCHAR(32) NOT NULL,
+    amount_cent INT NOT NULL,
+    callback_raw TEXT,
+    paid_at DATETIME DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_video_payment_channel_txn(channel, channel_txn_no),
+    INDEX idx_video_payment_order_no(order_no)
+);
+
+CREATE TABLE IF NOT EXISTS video_entitlement (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    work_id BIGINT NOT NULL,
+    order_no VARCHAR(64) NOT NULL,
+    source VARCHAR(32) NOT NULL DEFAULT 'PURCHASE',
+    granted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expire_at DATETIME DEFAULT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_video_entitlement_user_work_order(user_id, work_id, order_no),
+    INDEX idx_video_entitlement_user_status(user_id, status),
+    INDEX idx_video_entitlement_user_expire(user_id, expire_at)
+);
