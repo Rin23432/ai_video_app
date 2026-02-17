@@ -123,3 +123,15 @@ Content-Type: application/json
 ### 16. Community content search
 GET {{host}}/api/v1/community/contents/search?keyword=anime&cursor=0&limit=20
 Authorization: Bearer {{userToken}}
+
+### 17. Ranking - contents
+GET {{host}}/api/v1/community/rankings/contents?window=weekly&cursor=0&limit=20
+Authorization: Bearer {{userToken}}
+
+### 18. Ranking - authors
+GET {{host}}/api/v1/community/rankings/authors?window=weekly&cursor=0&limit=20
+Authorization: Bearer {{userToken}}
+
+### 19. Ranking - tags
+GET {{host}}/api/v1/community/rankings/tags?window=weekly&cursor=0&limit=20
+Authorization: Bearer {{userToken}}

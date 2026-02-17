@@ -4,6 +4,7 @@ import com.animegen.common.ApiResponse;
 import com.animegen.common.AuthContext;
 import com.animegen.service.CommunityService;
 import com.animegen.service.dto.*;
+import com.animegen.service.ranking.RankingService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class CommunityController {
     private final CommunityService communityService;
+    private final RankingService rankingService;
 
-    public CommunityController(CommunityService communityService) {
+    public CommunityController(CommunityService communityService, RankingService rankingService) {
         this.communityService = communityService;
+        this.rankingService = rankingService;
     }
 
     @PostMapping("/contents")
@@ -126,5 +129,29 @@ public class CommunityController {
     public ApiResponse<Boolean> remove(@PathVariable("contentId") @Min(1) Long contentId) {
         communityService.remove(AuthContext.getUserId(), contentId);
         return ApiResponse.ok(true);
+    }
+
+    @GetMapping("/rankings/contents")
+    public ApiResponse<CommunityRankingContentResponse> contentRankings(
+            @RequestParam(name = "window", defaultValue = "weekly") String window,
+            @RequestParam(name = "cursor", defaultValue = "0") @Min(0) Long cursor,
+            @RequestParam(name = "limit", defaultValue = "20") @Min(1) @Max(50) Integer limit) {
+        return ApiResponse.ok(rankingService.listContentRankings(window, cursor, limit));
+    }
+
+    @GetMapping("/rankings/authors")
+    public ApiResponse<CommunityRankingAuthorResponse> authorRankings(
+            @RequestParam(name = "window", defaultValue = "weekly") String window,
+            @RequestParam(name = "cursor", defaultValue = "0") @Min(0) Long cursor,
+            @RequestParam(name = "limit", defaultValue = "20") @Min(1) @Max(50) Integer limit) {
+        return ApiResponse.ok(rankingService.listAuthorRankings(window, cursor, limit));
+    }
+
+    @GetMapping("/rankings/tags")
+    public ApiResponse<CommunityRankingTagResponse> tagRankings(
+            @RequestParam(name = "window", defaultValue = "weekly") String window,
+            @RequestParam(name = "cursor", defaultValue = "0") @Min(0) Long cursor,
+            @RequestParam(name = "limit", defaultValue = "20") @Min(1) @Max(50) Integer limit) {
+        return ApiResponse.ok(rankingService.listTagRankings(window, cursor, limit));
     }
 }

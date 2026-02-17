@@ -6,6 +6,8 @@ import com.animegen.common.enums.WorkStatus;
 import com.animegen.dao.domain.*;
 import com.animegen.dao.mapper.*;
 import com.animegen.service.dto.*;
+import com.animegen.service.ranking.RankingConstants;
+import com.animegen.service.ranking.RankingService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class CommunityService {
     private final ContentCommentMapper contentCommentMapper;
     private final SensitiveWordFilter sensitiveWordFilter;
     private final StringRedisTemplate redisTemplate;
+    private final RankingService rankingService;
 
     public CommunityService(WorkMapper workMapper,
                             UserMapper userMapper,
@@ -40,7 +43,8 @@ public class CommunityService {
                             ContentFavoriteMapper contentFavoriteMapper,
                             ContentCommentMapper contentCommentMapper,
                             SensitiveWordFilter sensitiveWordFilter,
-                            StringRedisTemplate redisTemplate) {
+                            StringRedisTemplate redisTemplate,
+                            RankingService rankingService) {
         this.workMapper = workMapper;
         this.userMapper = userMapper;
         this.contentMapper = contentMapper;
@@ -51,6 +55,7 @@ public class CommunityService {
         this.contentCommentMapper = contentCommentMapper;
         this.sensitiveWordFilter = sensitiveWordFilter;
         this.redisTemplate = redisTemplate;
+        this.rankingService = rankingService;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -94,6 +99,7 @@ public class CommunityService {
             redisTemplate.opsForZSet().incrementScore(TAG_HOT_ZSET_KEY, String.valueOf(tagId), 1D);
         }
         redisTemplate.opsForZSet().add(HOT_ZSET_KEY, String.valueOf(contentDO.getId()), 0.0D);
+        emitRankingEvent(contentDO.getId(), RankingConstants.EVENT_CONTENT_PUBLISHED, 1L);
         return new CommunityPublishContentResponse(contentDO.getId());
     }
 
@@ -218,6 +224,7 @@ public class CommunityService {
             contentMapper.updateCounters(contentId, 1, 0, 0, 2);
             redisTemplate.opsForZSet().incrementScore(HOT_ZSET_KEY, String.valueOf(contentId), 2D);
             boostTagHotByContent(contentId, 2);
+            emitRankingEvent(contentId, RankingConstants.EVENT_LIKE_CREATED, 2L);
             response.setLiked(true);
         } catch (DuplicateKeyException ex) {
             int removed = contentLikeMapper.delete(contentId, userId);
@@ -225,6 +232,7 @@ public class CommunityService {
                 contentMapper.updateCounters(contentId, -1, 0, 0, -2);
                 redisTemplate.opsForZSet().incrementScore(HOT_ZSET_KEY, String.valueOf(contentId), -2D);
                 boostTagHotByContent(contentId, -2);
+                emitRankingEvent(contentId, RankingConstants.EVENT_LIKE_CANCELED, -2L);
             }
             response.setLiked(false);
         }
@@ -243,6 +251,7 @@ public class CommunityService {
             contentMapper.updateCounters(contentId, 0, 1, 0, 3);
             redisTemplate.opsForZSet().incrementScore(HOT_ZSET_KEY, String.valueOf(contentId), 3D);
             boostTagHotByContent(contentId, 3);
+            emitRankingEvent(contentId, RankingConstants.EVENT_FAVORITE_CREATED, 3L);
             response.setFavorited(true);
         } catch (DuplicateKeyException ex) {
             int removed = contentFavoriteMapper.delete(contentId, userId);
@@ -250,6 +259,7 @@ public class CommunityService {
                 contentMapper.updateCounters(contentId, 0, -1, 0, -3);
                 redisTemplate.opsForZSet().incrementScore(HOT_ZSET_KEY, String.valueOf(contentId), -3D);
                 boostTagHotByContent(contentId, -3);
+                emitRankingEvent(contentId, RankingConstants.EVENT_FAVORITE_CANCELED, -3L);
             }
             response.setFavorited(false);
         }
@@ -289,6 +299,7 @@ public class CommunityService {
         contentMapper.updateCounters(contentId, 0, 0, 1, 5);
         redisTemplate.opsForZSet().incrementScore(HOT_ZSET_KEY, String.valueOf(contentId), 5D);
         boostTagHotByContent(contentId, 5);
+        emitRankingEvent(contentId, RankingConstants.EVENT_COMMENT_CREATED, 5L);
         ContentDO latest = contentMapper.findById(contentId);
         return new CommunityCreateCommentResponse(commentDO.getId(), latest == null ? 0 : latest.getCommentCount());
     }
@@ -311,7 +322,10 @@ public class CommunityService {
         if (rows <= 0) {
             throw new BizException(ErrorCodes.COMMENT_NOT_FOUND, "comment not found");
         }
-        contentMapper.updateCounters(commentDO.getContentId(), 0, 0, -1, 0);
+        contentMapper.updateCounters(commentDO.getContentId(), 0, 0, -1, -5);
+        redisTemplate.opsForZSet().incrementScore(HOT_ZSET_KEY, String.valueOf(commentDO.getContentId()), -5D);
+        boostTagHotByContent(commentDO.getContentId(), -5);
+        emitRankingEvent(commentDO.getContentId(), RankingConstants.EVENT_COMMENT_DELETED, -5L);
     }
 
     public CommunityContentFeedResponse myFavorites(Long userId, Long cursor, Integer limit) {
@@ -508,5 +522,9 @@ public class CommunityService {
         if (userDO == null || "GUEST".equalsIgnoreCase(userDO.getRole())) {
             throw new BizException(ErrorCodes.LOGIN_REQUIRED, "login required");
         }
+    }
+
+    private void emitRankingEvent(Long contentId, String eventType, Long scoreDelta) {
+        rankingService.enqueueEvent(eventType, contentId, rankingService.buildPayload(contentId, scoreDelta));
     }
 }
