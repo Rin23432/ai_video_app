@@ -54,6 +54,21 @@
     <string name="settings_base_url">服务地址（baseUrl）</string>
     <string name="settings_device_id">设备ID（deviceId）</string>
     <string name="settings_save">保存</string>
+    <string name="settings_open_native_work_center">打开作品批量操作中心（View版）</string>
+
+    <string name="native_work_center_title">作品批量操作中心</string>
+    <string name="native_work_center_subtitle">原生View版：适合密集列表交互与批量操作</string>
+    <string name="native_work_center_back">返回</string>
+    <string name="native_work_center_reload">刷新</string>
+    <string name="native_work_center_sort">切换排序</string>
+    <string name="native_work_center_copy">复制选中ID</string>
+    <string name="native_work_center_empty">没有作品数据</string>
+    <string name="native_work_center_select_first">请先选择至少一个作品</string>
+    <string name="native_work_center_selected_format">已选中 %1$d 项</string>
+    <string name="native_work_center_copied_format">已复制 %1$d 个作品ID</string>
+    <string name="native_work_center_meta_format">ID %1$d | 更新时间 %2$s</string>
+    <string name="native_work_center_select">选择作品</string>
+    <string name="native_work_center_untitled">未命名作品</string>
 
     <string name="status_pending">排队中</string>
     <string name="status_running">进行中</string>

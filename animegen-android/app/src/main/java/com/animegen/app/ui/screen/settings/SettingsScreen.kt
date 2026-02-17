@@ -1,5 +1,6 @@
-﻿package com.animegen.app.ui.screen.settings
+package com.animegen.app.ui.screen.settings
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,9 +22,11 @@ import com.animegen.app.AppContainer
 import com.animegen.app.R
 import com.animegen.app.ui.common.ErrorNotice
 import com.animegen.app.ui.common.viewModelFactory
+import com.animegen.app.ui.screen.nativeview.NativeWorkCenterActivity
 
 @Composable
 fun SettingsRoute(container: AppContainer) {
+    val context = LocalContext.current
     val vm: SettingsViewModel = viewModel(factory = viewModelFactory {
         SettingsViewModel(container.preferences, container.authRepository)
     })
@@ -53,11 +57,13 @@ fun SettingsRoute(container: AppContainer) {
         Button(onClick = vm::save, enabled = !state.saving) {
             Text(stringResource(R.string.settings_save))
         }
+        Button(onClick = {
+            context.startActivity(Intent(context, NativeWorkCenterActivity::class.java))
+        }) {
+            Text(stringResource(R.string.settings_open_native_work_center))
+        }
         if (state.saving) CircularProgressIndicator()
         if (message != null) Text(message)
         if (errorMessage != null) ErrorNotice(message = errorMessage, onRetry = vm::save)
     }
 }
-
-
-

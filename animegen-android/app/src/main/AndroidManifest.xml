@@ -11,6 +11,9 @@
         android:theme="@style/Theme.AnimeGen"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.screen.nativeview.NativeWorkCenterActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
