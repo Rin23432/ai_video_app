@@ -1,5 +1,6 @@
 .m2/
 **/target/
+**/build/
 .idea/
 .vscode/
 *.iml
