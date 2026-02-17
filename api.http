@@ -135,3 +135,68 @@ Authorization: Bearer {{userToken}}
 ### 19. Ranking - tags
 GET {{host}}/api/v1/community/rankings/tags?window=weekly&cursor=0&limit=20
 Authorization: Bearer {{userToken}}
+
+@mallUserToken = REPLACE_MALL_USER_TOKEN
+@skuId = 2001
+@orderNo = VM202602171234000001
+@workId = 3001
+
+### M01. 视频商城-商品列表
+GET {{host}}/api/v1/mall/videos?cursor=0&limit=20&sort=latest
+Authorization: Bearer {{mallUserToken}}
+
+### M02. 视频商城-商品详情
+GET {{host}}/api/v1/mall/videos/{{skuId}}
+Authorization: Bearer {{mallUserToken}}
+
+### M03. 视频商城-创建订单（幂等 requestId）
+POST {{host}}/api/v1/mall/orders
+Authorization: Bearer {{mallUserToken}}
+Content-Type: application/json
+
+{
+  "requestId": "uuid-20260217-0001",
+  "items": [
+    { "skuId": {{skuId}}, "quantity": 1 }
+  ],
+  "client": {
+    "deviceId": "android-device-001",
+    "ip": "127.0.0.1"
+  }
+}
+
+### M04. 视频商城-预支付
+POST {{host}}/api/v1/mall/payments/{{orderNo}}/prepay
+Authorization: Bearer {{mallUserToken}}
+Content-Type: application/json
+
+{
+  "channel": "WECHAT_JSAPI",
+  "returnUrl": "animegen://mall/pay/result"
+}
+
+### M05. 视频商城-支付回调（服务端回调模拟）
+POST {{host}}/api/v1/mall/payments/callback
+Content-Type: application/json
+
+{
+  "channel": "WECHAT_JSAPI",
+  "orderNo": "{{orderNo}}",
+  "channelTxnNo": "420000000000001",
+  "status": "SUCCESS",
+  "amountCent": 990,
+  "paidAt": "2026-02-17T12:36:12Z",
+  "raw": "mock callback body"
+}
+
+### M06. 视频商城-我的订单
+GET {{host}}/api/v1/mall/me/orders?cursor=0&limit=20&status=PAID
+Authorization: Bearer {{mallUserToken}}
+
+### M07. 视频商城-我的权益
+GET {{host}}/api/v1/mall/me/entitlements?cursor=0&limit=20
+Authorization: Bearer {{mallUserToken}}
+
+### M08. 视频商城-播放鉴权
+GET {{host}}/api/v1/mall/play/auth/{{workId}}
+Authorization: Bearer {{mallUserToken}}
